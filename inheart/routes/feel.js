@@ -1,14 +1,10 @@
 const express=require('express');
 const router=require('express').Router();
-const multer=reuiqre('multer');
+const multer=require('multer');
 const con=require('../db/db');
 const path=require('path');
 
-router.post('/listfeel',(req,res,next)=>{
-    const {userNo,feelType}=req.body;
-    
 const mysql=require('mysql');
-const con=require('../db/db');
 
 
 router.post('/onefeel',(req,res,next)=>{
@@ -59,7 +55,8 @@ router.post('/insertfeel',(req,res,next)=>{
         } 
         // if there is no error, you have the result
         console.log(result);
-        return res.sendStatus(201)
+        return res.sendStatus(201);
+
     });
 });
 
