@@ -41,8 +41,9 @@ app.all('/*', function(req, res, next) {
     next();
   });
 
+app.use('/img',express.static('img'));
 //---------------------router------------------------
-app.use('/contents',contentsRouter);
+app.use('/contents',contentsRouter); 
 app.use('/faq',faqRouter);
 app.use('/feel',feelRouter);
 app.use('/notice',noticeRouter);
