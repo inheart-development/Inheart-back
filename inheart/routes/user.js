@@ -17,11 +17,12 @@ router.post('/login',(req,res,next)=>{
     con.query(q,(err,result,fields)=>{
         if(result && result.length!=0){
             console.log(result);
-            return res.status(200).json(result);
+            result[0].userNo
+            return res.status(200).json(result.pop());
             
         }
         else{
-            return res.status(204);
+            return res.sendStatus(204);
         
         }     
     });

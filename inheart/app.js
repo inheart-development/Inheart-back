@@ -5,7 +5,7 @@ const session=require('express-session');
 const cookieParser=require('cookie-parser');
 const mysql=require('mysql');
 const bodyparser=require('body-parser');
-
+const nowTime=require('date-utils');
 //---------------------router----------------------
 const contentsRouter=require('./routes/contents');
 const faqRouter=require('./routes/faq');
@@ -15,6 +15,7 @@ const starRouter=require('./routes/star');
 const statisRouter=require('./routes/statis');
 const surveyRouter=require('./routes/survey');
 const userRouter=require('./routes/user');
+
 //---------------------router------------------------
 
 // const con=mysql.createConnection({
