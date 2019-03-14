@@ -17,7 +17,6 @@ router.post('/login',(req,res,next)=>{
     con.query(q,(err,result,fields)=>{
         if(result && result.length!=0){
             console.log(result);
-            result[0].userNo
             return res.status(200).json(result.pop());
             
         }
