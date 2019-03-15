@@ -78,8 +78,9 @@ router.post('/meditotal',(req,res,next)=>{
     let q="select c.categoryNo, (select count(*) from feel f where f.contentsNo in (select co.contentsNo from contents co where co.categoryNo = c.categoryNo) and userNo = '"+userNo+"') `count` from category = c";
     con.query(q,(err,result,fields)=>{
         if(result && result.length!=0){
+            result.pop();
             console.log(result);
-            return res.status(201).json(result.pop());
+            return res.status(201).json(result);
         }
         else{
             return res.sendStatus(204);
