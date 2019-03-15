@@ -11,7 +11,7 @@ router.post('/surveylist',(req,res,next)=>{
     con.query(q,(err,result,fields)=>{
         if(result && result.length!=0){
             console.log(result);
-            return res.status(200).json(result.pop());
+            return res.status(200).json(result);
             
         }
         else{
