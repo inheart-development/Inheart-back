@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "cookie-parser": "^1.4.4",
+    "crypto": "^1.0.1",
     "date-utils": "^1.2.21",
     "express": "^4.16.4",
     "express-session": "^1.15.6",

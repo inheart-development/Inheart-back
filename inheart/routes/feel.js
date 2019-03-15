@@ -12,7 +12,7 @@ let q2="select max(feelNo)+1 from feel"; //프로필 사진 이름
 
 let storage = multer.diskStorage({
     destination: function(req, file ,callback){
-      callback(null, "feel/");
+      callback(null, "./feelImage/");
     },
     filename: function(req, file, callback){
       let extension=path.extname(file.originalname);

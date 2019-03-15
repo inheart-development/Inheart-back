@@ -3,6 +3,7 @@ const router=require('express').Router();
 const multer=require('multer');
 const con=require('../db/db');
 const path=require('path');
+const crypto=require('crypto');
 
 var userNumber;
 let q2="select max(userNo)+1 from user"; //프로필 사진 이름
@@ -12,7 +13,7 @@ let q2="select max(userNo)+1 from user"; //프로필 사진 이름
 
 let storage = multer.diskStorage({
     destination: function(req, file ,callback){
-      callback(null, "user/");
+      callback(null, "./userImage/");
     },
     filename: function(req, file, callback){
       let extension=path.extname(file.originalname);
@@ -26,12 +27,21 @@ let storage = multer.diskStorage({
 
 router.post('/login',(req,res,next)=>{
     const {userEmail,userPw}=req.body;
-    let q="select * from user where userEmail = '"+userEmail+"' and userPw = '"+userPw+"'";
+
+    let Pw=crypto.createHash('sha512').update(userPw).digest('base64');
+    let q="select * from user where userEmail = '"+userEmail+"' and userPw = '"+Pw+"'";
     con.query(q,(err,result,fields)=>{
         
         if(result && result.length!=0){
-            console.log(result);
-            return res.status(200).json(result.pop());
+            //console.log(result);
+            var getUserNo = result[0].userNo;
+            console.log(getUserNo);
+            let q2="insert into conlog values('0','"+getUserNo+"','"+new Date().toFormat("YYYY-MM-DD HH24:MI:SS")+"');";
+            con.query(q2,(err,result,fields)=>{
+                
+            });
+
+            res.status(200).json(result[0]);
             
         }
         else{
@@ -45,6 +55,8 @@ router.post('/login',(req,res,next)=>{
 router.post('/signup',upload.single("userImage"),(req,res,next)=>{
     res.header("Access-Control-Allow-Headers", "multipart/form-data");
     const {userName,userEmail,userPw}=req.body;
+    let Pw=crypto.createHash('sha512').update(userPw).digest('base64');
+    
     //console.log(userName+" "+userEmail+" "+userPw);
     let q1="select userEmail from user where userName="+userEmail;
     con.query(q1,(err,result,fields)=>{
@@ -58,7 +70,7 @@ router.post('/signup',upload.single("userImage"),(req,res,next)=>{
     //     userNumber=result;
     // });
     // console.log(userNumber);
-    let q="insert into user values('0','"+userEmail+"','"+userName+"','"+userPw+"','"+userNumber+"')";
+    let q="insert into user values('0','"+userEmail+"','"+userName+"','"+Pw+"','"+userNumber+"')";
     con.query(q,(err,result,fields)=>{
         if(result && result.length!=0){
             console.log(result);

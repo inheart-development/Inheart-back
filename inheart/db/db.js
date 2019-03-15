@@ -1,5 +1,6 @@
 const mysql=require('mysql');
 
+
 const con=mysql.createConnection({
     host:'192.168.0.82',
     user:'root',
