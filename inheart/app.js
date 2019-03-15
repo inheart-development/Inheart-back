@@ -43,6 +43,8 @@ app.all('/*', function(req, res, next) {
   });
 
 app.use('/img',express.static('img'));
+app.use('/sound',express.static('sound'));
+
 //---------------------router------------------------
 app.use('/contents',contentsRouter); 
 app.use('/faq',faqRouter);
