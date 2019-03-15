@@ -45,17 +45,20 @@ router.post('/noticebool',(req,res,next)=>{
     let q="update notice set noticeBool = "+noticeBool+" where noticeNo = "+noticeNo+";";
 
     console.log(q)
+  
     con.query(q,(err,result,fields)=>{
-        if(result && result.length!=0){
-            console.log(result);
-            return res.sendstatus(200);
-            
-        }
-        else{
-            return res.sendStatus(204);
+
+        if (err){
+            res.sendStatus(204);
+            throw err;
+        } 
+        // if there is no error, you have the result
+        console.log(result);
+        res.sendStatus(200)
         
-        }
     });
+
+    return;
 });
 
 
