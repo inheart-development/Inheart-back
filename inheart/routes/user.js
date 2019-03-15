@@ -4,13 +4,19 @@ const multer=require('multer');
 const con=require('../db/db');
 const path=require('path');
 
+var userNumber;
+let q2="select max(userNo)+1 from user"; //프로필 사진 이름
+    con.query(q2,(err,result,fields)=>{
+        userNumber=result;
+});
+
 let storage = multer.diskStorage({
     destination: function(req, file ,callback){
       callback(null, "user/");
     },
     filename: function(req, file, callback){
       let extension=path.extname(file.originalname);
-      callback(null,1+extension);
+      callback(null,userNumber+extension);
     }
   });
    
@@ -46,12 +52,12 @@ router.post('/signup',upload.single("userImage"),(req,res,next)=>{
             res.send("이미있는 아이디 입니다.");
         }
     });
-    var userNumber;
-    let q2="select max(userNo)+1 from user"; //프로필 사진 이름
-    con.query(q2,(err,result,fields)=>{
-        userNumber=result;
-    });
-    console.log(userNumber);
+    // var userNumber;
+    // let q2="select max(userNo)+1 from user"; //프로필 사진 이름
+    // con.query(q2,(err,result,fields)=>{
+    //     userNumber=result;
+    // });
+    // console.log(userNumber);
     let q="insert into user values('0','"+userEmail+"','"+userName+"','"+userPw+"','"+userNumber+"')";
     con.query(q,(err,result,fields)=>{
         if(result && result.length!=0){

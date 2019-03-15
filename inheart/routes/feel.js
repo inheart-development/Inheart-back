@@ -4,7 +4,25 @@ const multer=require('multer');
 const con=require('../db/db');
 const path=require('path');
 
-const mysql=require('mysql');
+var feelNumber;
+let q2="select max(feelNo)+1 from feel"; //프로필 사진 이름
+    con.query(q2,(err,result,fields)=>{
+        feelNumber=result;
+});
+
+let storage = multer.diskStorage({
+    destination: function(req, file ,callback){
+      callback(null, "feel/");
+    },
+    filename: function(req, file, callback){
+      let extension=path.extname(file.originalname);
+      callback(null,feelNumber+extension);
+    }
+  });
+   
+  let upload = multer({
+    storage: storage
+  });
 
 
 router.post('/onefeel',(req,res,next)=>{
@@ -43,9 +61,9 @@ router.post('/listfeel',(req,res,next)=>{
     });
 });
 
-router.post('/insertfeel',(req,res,next)=>{
+router.post('/insertfeel',upload.single("feelImage"),(req,res,next)=>{
     const {userNo,contentsNo,feelImage,feelText,feelTime,feelType}=req.body;
-    let q="insert into feel values('0','"+userNo+"','"+contentsNo+"','"+new Date().toFormat("YYYY-MM-DD HH24:MI:SS")+"','"+feelImage+"image경로 하자','"+feelText+"','"+feelTime+"','"+feelType+"');";
+    let q="insert into feel values('0','"+userNo+"','"+contentsNo+"','"+new Date().toFormat("YYYY-MM-DD HH24:MI:SS")+"','"+feelNumber+"','"+"'0','"+feelText+"','"+feelTime+"','"+feelType+"')";
     console.log(q)
     con.query(q,(err,result,fields)=>{
 
