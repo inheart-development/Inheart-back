@@ -1,66 +1,91 @@
-const express=require('express');
-const router=require('express').Router();
-const multer=require('multer');
-const con=require('../db/db');
-const path=require('path');
-const crypto=require('crypto');
+const express = require('express');
+const router = require('express').Router();
+const multer = require('multer');
+const con = require('../db/db');
+const path = require('path');
+const fs = require('fs');
+const crypto = require('crypto');
 
-var userNumber;
-let q2="select max(userNo)+1 from user"; //프로필 사진 이름
-    con.query(q2,(err,result,fields)=>{
-        userNumber=result;
+fs.readdir('profileImage', (error) => { //프로필 사진 저장 폴더 확인
+    if (error) {
+        console.error('profileImage 폴더가 없어 profileImage 폴더를 생성합니다.');
+        fs.mkdirSync('profileImage');
+    }
 });
 
-let storage = multer.diskStorage({
-    destination: function(req, file ,callback){
-      callback(null, "./userImage/");
-    },
-    filename: function(req, file, callback){
-      let extension=path.extname(file.originalname);
-      callback(null,userNumber+extension);
-    }
-  });
-   
-  let upload = multer({
-    storage: storage
-  });
+var userNumber;
+let q2 = "select max(userNo)+1 from user"; //프로필 사진 이름
+con.query(q2, (err, result, fields) => {
+    userNumber = result;
+});
 
-router.post('/login',(req,res,next)=>{
-    const {userEmail,userPw}=req.body;
+// let storage = multer.diskStorage({
+//     destination: function (req, file, callback) {
+//         callback(null, "./userImage/");
+//     },
+//     filename: function (req, file, callback) {
+//         let extension = path.extname(file.originalname);
+//         callback(null, userNumber + extension);
+//     }
+// });
 
-    let Pw=crypto.createHash('sha512').update(userPw).digest('base64');
-    let q="select * from user where userEmail = '"+userEmail+"' and userPw = '"+Pw+"'";
-    con.query(q,(err,result,fields)=>{
-        
-        if(result && result.length!=0){
+// let upload = multer({
+//     storage: storage
+// });
+
+const upload = multer({
+    storage: multer.diskStorage({ //서버 디스크에 저장
+        destination(req, file, cb) {
+            cb(null, 'profileImage/'); //프사 저장 경로
+        },
+        filename(req, file, cb) {
+            const ext = path.extname(file.originalname); //파일의 확장자를 ext에 저장
+            cb(null, userNumber + ext); //userNumber로 프사 저장
+        }
+    })
+});
+
+router.post('/login', (req, res, next) => {
+    const {
+        userEmail,
+        userPw
+    } = req.body;
+
+    let Pw = crypto.createHash('sha512').update(userPw).digest('base64');
+    let q = "select * from user where userEmail = '" + userEmail + "' and userPw = '" + Pw + "'";
+    con.query(q, (err, result, fields) => {
+
+        if (result && result.length != 0) {
             //console.log(result);
             var getUserNo = result[0].userNo;
             console.log(getUserNo);
-            let q2="insert into conlog values('0','"+getUserNo+"','"+new Date().toFormat("YYYY-MM-DD HH24:MI:SS")+"');";
-            con.query(q2,(err,result,fields)=>{
-                
+            let q2 = "insert into conlog values('0','" + getUserNo + "','" + new Date().toFormat("YYYY-MM-DD HH24:MI:SS") + "');";
+            con.query(q2, (err, result, fields) => {
+
             });
 
             res.status(200).json(result[0]);
-            
-        }
-        else{
+
+        } else {
             return res.sendStatus(204);
-        
-        }     
+
+        }
     });
 });
 
-//아이디 중복,
-router.post('/signup',upload.single("userImage"),(req,res,next)=>{
+router.post('/signup', upload.single("userImage"), (req, res, next) => {
     res.header("Access-Control-Allow-Headers", "multipart/form-data");
-    const {userName,userEmail,userPw}=req.body;
-    let Pw=crypto.createHash('sha512').update(userPw).digest('base64');
-    
+    const {
+        userName,
+        userEmail,
+        userPw
+    } = req.body;
+    let Pw = crypto.createHash('sha512').update(userPw).digest('base64');
+
     //console.log(userName+" "+userEmail+" "+userPw);
-    let q1="select userEmail from user where userName="+userEmail;
-    con.query(q1,(err,result,fields)=>{
-        if(result && result.length!=0){
+    let q1 = "select userEmail from user where userName=" + userEmail;
+    con.query(q1, (err, result, fields) => {
+        if (result && result.length != 0) {
             res.send("이미있는 아이디 입니다.");
         }
     });
@@ -70,40 +95,42 @@ router.post('/signup',upload.single("userImage"),(req,res,next)=>{
     //     userNumber=result;
     // });
     // console.log(userNumber);
-    let q="insert into user values('0','"+userEmail+"','"+userName+"','"+Pw+"','"+userNumber+"')";
-    con.query(q,(err,result,fields)=>{
-        if(result && result.length!=0){
+    let q = "insert into user values('0','" + userEmail + "','" + userName + "','" + Pw + "','" + userNumber + "')";
+    con.query(q, (err, result, fields) => {
+        if (result && result.length != 0) {
             console.log(result);
             return res.status(201).send(result);
-        }
-        else{
+        } else {
             return res.sendStatus(204);
-         }     
+        }
     });
 });
 
-router.delete('/exit',(req,res,next)=>{
-    const {userNo}=req.body;
+router.delete('/exit', (req, res, next) => {
+    const {
+        userNo
+    } = req.body;
     console.log(userNo);
-    let q="delete from user where userNo ="+userNo;
-    con.query(q,(err,result,fields)=>{
+    let q = "delete from user where userNo =" + userNo;
+    con.query(q, (err, result, fields) => {
         return res.sendStatus(200);
     });
 });
 
-router.post('/meditotal',(req,res,next)=>{
-    const {userNo}=req.body;
-    let q="select c.categoryNo, (select count(*) from feel f where f.contentsNo in (select co.contentsNo from contents co where co.categoryNo = c.categoryNo) and userNo = '"+userNo+"') `count` from category = c";
-    con.query(q,(err,result,fields)=>{
-        if(result && result.length!=0){
+router.post('/meditotal', (req, res, next) => {
+    const {
+        userNo
+    } = req.body;
+    let q = "select c.categoryNo, (select count(*) from feel f where f.contentsNo in (select co.contentsNo from contents co where co.categoryNo = c.categoryNo) and userNo = '" + userNo + "') `count` from category = c";
+    con.query(q, (err, result, fields) => {
+        if (result && result.length != 0) {
             result.pop();
             console.log(result);
             return res.status(201).json(result);
-        }
-        else{
+        } else {
             return res.sendStatus(204);
-         }  
+        }
     });
 });
 
-module.exports=router;
+module.exports = router;
