@@ -5,6 +5,11 @@ const con = require('../db/db');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const passport = require('passport');
+const {
+    isLoggedIn,
+    isNotLoggedIn
+} = require('./logincheck');
 
 fs.readdir('profileImage', (error) => { //프로필 사진 저장 폴더 확인
     if (error) {
@@ -45,35 +50,57 @@ const upload = multer({
     })
 });
 
-router.post('/login', (req, res, next) => {
-    const {
-        userEmail,
-        userPw
-    } = req.body;
+router.post('/login', isNotLoggedIn, (req, res, next) => {
+    // const {
+    //     userEmail,
+    //     userPw
+    // } = req.body;
 
-    let Pw = crypto.createHash('sha512').update(userPw).digest('base64');
-    let q = "select * from user where userEmail = '" + userEmail + "' and userPw = '" + Pw + "'";
-    con.query(q, (err, result, fields) => {
+    // let Pw = crypto.createHash('sha512').update(userPw).digest('base64');
+    // let q = "select * from user where userEmail = '" + userEmail + "' and userPw = '" + Pw + "'";
+    // con.query(q, (err, result, fields) => {
 
-        if (result && result.length != 0) {
-            //console.log(result);
-            var getUserNo = result[0].userNo;
-            console.log(getUserNo);
-            let q2 = "insert into conlog values('0','" + getUserNo + "','" + new Date().toFormat("YYYY-MM-DD HH24:MI:SS") + "');";
-            con.query(q2, (err, result, fields) => {
+    //     if (result && result.length != 0) {
+    //         //console.log(result);
+    //         var getUserNo = result[0].userNo;
+    //         console.log(getUserNo);
+    //         let q2 = "insert into conlog values('0','" + getUserNo + "','" + new Date().toFormat("YYYY-MM-DD HH24:MI:SS") + "');";
+    //         con.query(q2, (err, result, fields) => {
+    //         });
 
-            });
+    //         res.status(200).json(result[0]);
 
-            res.status(200).json(result[0]);
+    //     } else {
+    //         return res.sendStatus(204);
 
-        } else {
-            return res.sendStatus(204);
-
+    //     }
+    // });
+    passport.authenticate('local', (authError, user, info) => {
+        if (authError) {
+            console.error(authError);
+            return next(authError);
         }
-    });
+        if (!user) {
+            req.flash('loginError', info.message);
+            return res.redirect('/');
+        }
+        return req.login(user, (loginError) => {
+            if (loginError) {
+                console.error(loginError);
+                return next(loginError);
+            }
+            return res.redirect('/');
+        });
+    })(req, res, next);
 });
 
-router.post('/signup', upload.single("userImage"), (req, res, next) => {
+router.get('/logout', isLoggedIn, (req, res) => {
+    req.logout();
+    req.session.destroy();
+    res.redirect('/');
+});
+
+router.post('/signup', isNotLoggedIn, upload.single("userImage"), (req, res, next) => {
     res.header("Access-Control-Allow-Headers", "multipart/form-data");
     const {
         userName,

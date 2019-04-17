@@ -1,12 +1,15 @@
 const express = require('express');
-const router = require('express').Router();
+const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const con = require('../db/db');
 const path = require('path');
+const {
+    isLoggedIn
+} = require('./logincheck');
 
-fs.readdir('feelImage', (error) => {
+fs.readdir('feelImage', isLoggedIn, (error) => {
     if (error) {
         console.error('feelImage 폴더가 없어 uploads 폴더를 생성합니다.');
         fs.mkdirSync('feelImage');
@@ -45,7 +48,7 @@ const upload = multer({
 });
 
 
-router.post('/onefeel', (req, res, next) => {
+router.post('/onefeel', isLoggedIn, (req, res, next) => {
     const {
         feelNo
     } = req.body;
@@ -64,7 +67,7 @@ router.post('/onefeel', (req, res, next) => {
     });
 });
 
-router.post('/listfeel', (req, res, next) => {
+router.post('/listfeel', isLoggedIn, (req, res, next) => {
     const {
         userNo,
         feelType
@@ -84,7 +87,7 @@ router.post('/listfeel', (req, res, next) => {
     });
 });
 
-router.post('/insertfeel', upload.single("feelImage"), (req, res, next) => {
+router.post('/insertfeel', isLoggedIn, upload.single("feelImage"), (req, res, next) => {
     const {
         userNo,
         contentsNo,
