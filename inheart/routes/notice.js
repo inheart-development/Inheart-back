@@ -1,36 +1,44 @@
-const express=require('express');
-const router=require('express').Router();
-const mysql=require('mysql');
-const con=require('../db/db');
+const express = require('express');
+const router = require('express').Router();
+const mysql = require('mysql');
+const con = require('../db/db');
+const {
+    isLoggedIn
+} = require('./logincheck');
 
-router.post('/noticelist',(req,res,next)=>{
-    const {userNo}=req.body;
-    let q="select * from notice where userNo = '"+userNo+"';";
+router.post('/noticelist', isLoggedIn, (req, res, next) => {
+    const {
+        userNo
+    } = req.body;
+    let q = "select * from notice where userNo = '" + userNo + "';";
 
     console.log(q)
-    con.query(q,(err,result,fields)=>{
-        if(result && result.length!=0){
+    con.query(q, (err, result, fields) => {
+        if (result && result.length != 0) {
             console.log(result);
             return res.status(200).json(result);
-            
-        }
-        else{
+
+        } else {
             return res.sendStatus(204);
-        
+
         }
     });
 });
 
-router.post('/initnotice',(req,res,next)=>{
-    const {userNo,noticeTime,noticeBool}=req.body;
-    let q="insert into notice values('0','"+userNo+"','"+noticeTime+"',"+noticeBool+");";
+router.post('/initnotice', isLoggedIn, (req, res, next) => {
+    const {
+        userNo,
+        noticeTime,
+        noticeBool
+    } = req.body;
+    let q = "insert into notice values('0','" + userNo + "','" + noticeTime + "'," + noticeBool + ");";
     console.log(q)
-    con.query(q,(err,result,fields)=>{
+    con.query(q, (err, result, fields) => {
 
-        if (err){
+        if (err) {
             return res.sendStatus(204);
             throw err;
-        } 
+        }
 
         // if there is no error, you have the result
         console.log(result);
@@ -40,26 +48,29 @@ router.post('/initnotice',(req,res,next)=>{
 });
 
 
-router.post('/noticebool',(req,res,next)=>{
-    const {noticeBool,noticeNo}=req.body;
-    let q="update notice set noticeBool = "+noticeBool+" where noticeNo = "+noticeNo+";";
+router.post('/noticebool', isLoggedIn, (req, res, next) => {
+    const {
+        noticeBool,
+        noticeNo
+    } = req.body;
+    let q = "update notice set noticeBool = " + noticeBool + " where noticeNo = " + noticeNo + ";";
 
     console.log(q)
-  
-    con.query(q,(err,result,fields)=>{
 
-        if (err){
+    con.query(q, (err, result, fields) => {
+
+        if (err) {
             res.sendStatus(204);
             throw err;
-        } 
+        }
         // if there is no error, you have the result
         console.log(result);
         res.sendStatus(200)
-        
+
     });
 
     return;
 });
 
 
-module.exports=router;
+module.exports = router;
