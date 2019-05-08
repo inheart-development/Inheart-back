@@ -2,9 +2,9 @@ const mysql=require('mysql');
 
 
 const con=mysql.createConnection({
-    host:'192.168.0.82',
-    user:'root',
-    password:'zero8787',
+    host:'localhost',
+    user:'root',     //계정 변경
+    password:'1234',
     database:'inheart'
 });
 con.connect(function (err) {

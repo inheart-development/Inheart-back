@@ -28,6 +28,7 @@ let storage = multer.diskStorage({
 router.post('/login',(req,res,next)=>{
     const {userEmail,userPw}=req.body;
 
+ 
     let Pw=crypto.createHash('sha512').update(userPw).digest('base64');
     let q="select * from user where userEmail = '"+userEmail+"' and userPw = '"+Pw+"'";
     con.query(q,(err,result,fields)=>{
@@ -55,8 +56,8 @@ router.post('/login',(req,res,next)=>{
 router.post('/signup',upload.single("userImage"),(req,res,next)=>{
     res.header("Access-Control-Allow-Headers", "multipart/form-data");
     const {userName,userEmail,userPw}=req.body;
-    let Pw=crypto.createHash('sha512').update(userPw).digest('base64');
-    
+    //let Pw=crypto.createHash('sha512').update(userPw).digest('base64');
+    Pw=userPw
     //console.log(userName+" "+userEmail+" "+userPw);
     let q1="select userEmail from user where userName="+userEmail;
     con.query(q1,(err,result,fields)=>{
