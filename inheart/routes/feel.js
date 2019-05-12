@@ -2,25 +2,27 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
+// const fs = require('fs');
 const con = require('../db/db');
-const path = require('path');
+
+
 const {
     isLoggedIn
 } = require('./logincheck');
 
-fs.readdir('feelImage', isLoggedIn, (error) => {
-    if (error) {
-        console.error('feelImage 폴더가 없어 uploads 폴더를 생성합니다.');
-        fs.mkdirSync('feelImage');
-    }
-});
+//오류나서 잠시 주석
+// fs.readdir('feelImage', isLoggedIn, (error) => {
+//     if (error) {
+//         console.error('feelImage 폴더가 없어 uploads 폴더를 생성합니다.');
+//         fs.mkdirSync('feelImage');
+//     }
+// });
 
-var feelNumber;
-let q2 = "select max(feelNo)+1 from feel"; //프로필 사진 이름
-con.query(q2, (err, result, fields) => {
-    feelNumber = result;
-});
+// var feelNumber;
+// let q2 = "select max(feelNo)+1 from feel"; //프로필 사진 이름
+// con.query(q2, (err, result, fields) => {
+//     feelNumber = result;
+// });
 
 // let storage = multer.diskStorage({
 //     destination: function(req, file ,callback){

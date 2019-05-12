@@ -24,19 +24,6 @@ con.query(q2, (err, result, fields) => {
     userNumber = result;
 });
 
-let storage = multer.diskStorage({
-    destination: function(req, file ,callback){
-      callback(null, "./userImage/");
-    },
-    filename: function(req, file, callback){
-      let extension=path.extname(file.originalname);
-      callback(null,userNumber+extension);
-    }
-  });
-   
-  let upload = multer({
-    storage: storage
-  });
 
 router.post('/login',(req,res,next)=>{
     const {userEmail,userPw}=req.body;
@@ -57,19 +44,13 @@ router.post('/login',(req,res,next)=>{
 
             res.status(200).json(result[0]);
             
-// let storage = multer.diskStorage({
-//     destination: function (req, file, callback) {
-//         callback(null, "./userImage/");
-//     },
-//     filename: function (req, file, callback) {
-//         let extension = path.extname(file.originalname);
-//         callback(null, userNumber + extension);
-//     }
-// });
+        }
+        
+    });
 
-// let upload = multer({
-//     storage: storage
-// });
+});
+
+
 
 const upload = multer({
     storage: multer.diskStorage({ //서버 디스크에 저장

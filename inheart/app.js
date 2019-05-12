@@ -1,8 +1,9 @@
 const express = require('express');
 const morgan = require('morgan');
+const path = require('path');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-const bodyparser = require('body-parser');
+const bodyParser = require('body-parser');
 const nowTime = require('date-utils');
 const passport = require('passport');
 const flash = require('connect-flash');
@@ -41,27 +42,47 @@ app.use(express.urlencoded({
     extended: false
 }));
 
-app.use(cookieParser(process.env.COOKIE_SECRET));
-app.use(
-    session({
-        resave: false,
-        saveUninitialized: false,
-        secret: process.env.COOKIE_SECRET,
-        cookie: {
-            httpOnly: true,
-            secure: false
-        }
-    })
-);
-app.use(flash);
-app.use(passport.initialize()); //요청 객체에 passport설정을 심는다
-app.use(passport.session()); //express-session에서 생성하는 것이므로 express-session 뒤에 연결 해야 된다
+//테스트 용으로 잠시
 
-app.all('/*', function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Content-Type");
+// app.use(flash);
+// app.use(passport.initialize()); //요청 객체에 passport설정을 심는다
+// app.use(passport.session()); //express-session에서 생성하는 것이므로 express-session 뒤에 연결 해야 된다
+
+// app.use(cookieParser(process.env.COOKIE_SECRET));
+// app.use(
+//     session({
+//         resave: false,
+//         saveUninitialized: false,
+//         secret: process.env.COOKIE_SECRET,
+//         cookie: {
+//             httpOnly: true,
+//             secure: false
+//         }
+//     })
+// );
+
+
+//bodyParser
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+
+// app.all('/*', function (req, res, next) {
+//     res.header("Access-Control-Allow-Origin", "*");
+//     res.header("Access-Control-Allow-Headers", "Content-Type");
+//     next();
+// });
+
+//미들웨어 설정
+app.use(function (req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    //res.header('Access-Control-Allow-Headers', 'content-type, x-access-token');
+    res.header('Access-Control-Allow-Headers', 'content-type');
     next();
 });
+
+
+
 
 app.use('/img', express.static('img'));
 app.use('/sound', express.static('sound'));
