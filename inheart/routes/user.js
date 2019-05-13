@@ -142,6 +142,7 @@ router.post('/signup', isNotLoggedIn, upload.single("userImage"), (req, res, nex
             console.log(result);
             return res.status(201).send(result);
         } else {
+            console.log(err);
             return res.sendStatus(204);
         }
     });
@@ -158,7 +159,7 @@ router.delete('/exit', (req, res, next) => {
     });
 });
 
-router.post('/meditotal', (req, res, next) => {
+router.get('/meditotal', (req, res, next) => {
     const {
         userNo
     } = req.body;

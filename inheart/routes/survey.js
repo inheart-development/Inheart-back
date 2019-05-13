@@ -8,7 +8,7 @@ const {
 } = require('./logincheck');
 
 
-router.post('/surveylist', isLoggedIn, (req, res, next) => {
+router.get('/surveylist', isLoggedIn, (req, res, next) => {
     const {
         userNo
     } = req.body;

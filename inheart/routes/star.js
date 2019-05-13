@@ -6,7 +6,7 @@ const {
     isLoggedIn
 } = require('./logincheck');
 
-router.post('/starlist', isLoggedIn, (req, res, next) => {
+router.get('/starlist', isLoggedIn, (req, res, next) => {
     const {
         userNo,
         categoryNo
