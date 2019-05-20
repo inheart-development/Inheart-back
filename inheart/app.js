@@ -8,7 +8,6 @@ const nowTime = require('date-utils');
 const passport = require('passport');
 const flash = require('connect-flash');
 require("dotenv").config();
-//
 //---------------------router----------------------
 const contentsRouter = require('./routes/contents');
 const faqRouter = require('./routes/faq');
