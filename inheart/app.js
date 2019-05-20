@@ -1,8 +1,9 @@
+const createError = require('http-errors');
 const express = require('express');
 const morgan = require('morgan');
+const path = require('path');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-const bodyparser = require('body-parser');
 const nowTime = require('date-utils');
 const passport = require('passport');
 const flash = require('connect-flash');
@@ -16,23 +17,12 @@ const starRouter = require('./routes/star');
 const statisRouter = require('./routes/statis');
 const surveyRouter = require('./routes/survey');
 const userRouter = require('./routes/user');
-const passportConfig = require("./passport");
+const passportConfig = require("./passport/passport");
 
 //---------------------router------------------------
 
-// const con=mysql.createConnection({
-//     host:'localhost',
-//     user:'root',
-//     password:'zero8787',
-//     database:'inheart'
-// });
-// con.connect(function (err) {
-// 	if (err) throw err;
-// 	console.log("Connected!");
-// });
-
 const app = express();
-passportConfig(passport);
+passportConfig(); //passport 내부의 코드를 실행하기 위해
 app.set('port', process.env.PORT || 8001);
 
 app.use(morgan('dev'));
@@ -46,7 +36,7 @@ app.use(
     session({
         name: 'sessionID',
         resave: false,
-        saveUninitialized: false,
+        saveUninitialized: true,
         secret: process.env.COOKIE_SECRET,
         cookie: {
             httpOnly: true,
@@ -54,15 +44,24 @@ app.use(
         }
     })
 );
-app.use(flash);
+app.use(flash());
 app.use(passport.initialize()); //요청 객체에 passport설정을 심는다
 app.use(passport.session()); //express-session에서 생성하는 것이므로 express-session 뒤에 연결 해야 된다
 
-app.all('/*', function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Content-Type");
+// app.all('/*', function (req, res, next) {
+//     res.header("Access-Control-Allow-Origin", "*");
+//     res.header("Access-Control-Allow-Headers", "Content-Type");
+// });
+
+//미들웨어 설정
+app.use(function (req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    //res.header('Access-Control-Allow-Headers', 'content-type, x-access-token');
+    res.header('Access-Control-Allow-Headers', 'content-type');
     next();
 });
+
 
 app.use('/img', express.static('img'));
 app.use('/sound', express.static('sound'));
@@ -79,7 +78,7 @@ app.use('/user', userRouter);
 //---------------------router------------------------
 
 app.use((req, res, next) => {
-    const err = new('Not Found');
+    const err = new Error('Not Found');
     err.status = 404;
     next(err);
 });
