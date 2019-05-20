@@ -11,6 +11,8 @@ const {
     isNotLoggedIn
 } = require('../check/check');
 
+const util = require("../check/util")
+
 fs.readdir("profileImage", error => {
     //프로필 사진 저장 폴더 확인
     if (error) {
@@ -90,7 +92,7 @@ router.post(
         // let q1 = "select userEmail from user where userName=" + userEmail;
         con.query("select userEmail from user where userName=?", [userEmail], (err, result, fields) => {
             if (result && result.length != 0) {
-                res.send("이미있는 아이디 입니다.");
+                res.json(util.successFalse(null,"이미있는 아이디입니다."))
             }
         });
         // var userNumber;
@@ -113,8 +115,10 @@ router.post(
         con.query("insert into user values('0',?,?,?,?)", [userEmail, userName, Pw, userNumber], (err, result, fields) => {
             if (result && result.length != 0) {
                 console.log(result);
-                return res.status(201).send(result);
+                return res.status(201).json(result);
             } else {
+
+                //실패 아닌가 보류
                 return res.sendStatus(204);
             }
         });
