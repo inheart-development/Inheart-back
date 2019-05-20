@@ -10,10 +10,10 @@ router.post('/noticelist', isLoggedIn, (req, res, next) => {
     const {
         userNo
     } = req.body;
-    let q = "select * from notice where userNo = '" + userNo + "';";
+    // let q = "select * from notice where userNo = '" + userNo + "';";
 
-    console.log(q)
-    con.query(q, (err, result, fields) => {
+    // console.log(q)
+    con.query("select * from notice where userNo =?", [userNo], (err, result, fields) => {
         if (result && result.length != 0) {
             console.log(result);
             return res.status(200).json(result);
@@ -31,9 +31,9 @@ router.post('/initnotice', isLoggedIn, (req, res, next) => {
         noticeTime,
         noticeBool
     } = req.body;
-    let q = "insert into notice values('0','" + userNo + "','" + noticeTime + "'," + noticeBool + ");";
-    console.log(q)
-    con.query(q, (err, result, fields) => {
+    // let q = "insert into notice values('0','" + userNo + "','" + noticeTime + "'," + noticeBool + ");";
+    // console.log(q)
+    con.query("insert into notice values(0,?,?,?)", [userNo, noticeTime, noticeBool], (err, result, fields) => {
 
         if (err) {
             return res.sendStatus(204);
@@ -53,11 +53,11 @@ router.post('/noticebool', isLoggedIn, (req, res, next) => {
         noticeBool,
         noticeNo
     } = req.body;
-    let q = "update notice set noticeBool = " + noticeBool + " where noticeNo = " + noticeNo + ";";
+    // let q = "update notice set noticeBool = " + noticeBool + " where noticeNo = " + noticeNo + ";";
 
-    console.log(q)
+    // console.log(q)
 
-    con.query(q, (err, result, fields) => {
+    con.query("update notice set noticeBool=? where noticeNo=?", [noticeBool, noticeNo], (err, result, fields) => {
 
         if (err) {
             res.sendStatus(204);

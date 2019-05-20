@@ -54,10 +54,10 @@ router.post('/onefeel', isLoggedIn, (req, res, next) => {
     const {
         feelNo
     } = req.body;
-    let q = "select * from feel where feelNo = '" + feelNo + "';";
+    // let q = "select * from feel where feelNo = '" + feelNo + "';";
 
-    console.log(q)
-    con.query(q, (err, result, fields) => {
+    // console.log(q)
+    con.query("select * from feel where feelNo =?", [feelNo], (err, result, fields) => {
         if (result && result.length != 0) {
             console.log(result);
             return res.status(200).json(result.pop());
@@ -74,10 +74,10 @@ router.post('/listfeel', isLoggedIn, (req, res, next) => {
         userNo,
         feelType
     } = req.body;
-    let q = "select * from feel where userNo = '" + userNo + "' and feelType like '%" + feelType + "%' ;";
+    // let q = "select * from feel where userNo = '" + userNo + "' and feelType like '%" + feelType + "%' ;";
 
-    console.log(q)
-    con.query(q, (err, result, fields) => {
+    // console.log(q)
+    con.query("select * from feel where userNo =? and feelType like '%?%'", [userNo, feelType], (err, result, fields) => {
         if (result && result.length != 0) {
             console.log(result);
             return res.status(200).json(result);

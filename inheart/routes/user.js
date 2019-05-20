@@ -87,8 +87,8 @@ router.post(
             .digest("base64");
 
         //console.log(userName+" "+userEmail+" "+userPw);
-        let q1 = "select userEmail from user where userName=" + userEmail;
-        con.query(q1, (err, result, fields) => {
+        // let q1 = "select userEmail from user where userName=" + userEmail;
+        con.query("select userEmail from user where userName=?", [userEmail], (err, result, fields) => {
             if (result && result.length != 0) {
                 res.send("이미있는 아이디 입니다.");
             }
@@ -99,17 +99,18 @@ router.post(
         //     userNumber=result;
         // });
         // console.log(userNumber);
-        let q =
-            "insert into user values('0','" +
-            userEmail +
-            "','" +
-            userName +
-            "','" +
-            Pw +
-            "','" +
-            userNumber +
-            "')";
-        con.query(q, (err, result, fields) => {
+        //--------------------------------------
+        // let q =
+        //     "insert into user values('0','" +
+        //     userEmail +
+        //     "','" +
+        //     userName +
+        //     "','" +
+        //     Pw +
+        //     "','" +
+        //     userNumber +
+        //     "')";
+        con.query("insert into user values('0',?,?,?,?)", [userEmail, userName, Pw, userNumber], (err, result, fields) => {
             if (result && result.length != 0) {
                 console.log(result);
                 return res.status(201).send(result);
@@ -135,11 +136,11 @@ router.get('/meditotal', (req, res, next) => {
     const {
         userNo
     } = req.body;
-    let q =
-        "select c.categoryNo, (select count(*) from feel f where f.contentsNo in (select co.contentsNo from contents co where co.categoryNo = c.categoryNo) and userNo = '" +
-        userNo +
-        "') `count` from category = c";
-    con.query(q, (err, result, fields) => {
+    // let q =
+    //     "select c.categoryNo, (select count(*) from feel f where f.contentsNo in (select co.contentsNo from contents co where co.categoryNo = c.categoryNo) and userNo = '" +
+    //     userNo +
+    //     "') `count` from category = c";
+    con.query("select c.categoryNo, (select count(*) from feel f where f.contentsNo in (select co.contentsNo from contents co where co.categoryNo = c.categoryNo) and userNo =?) `count` from category = c", [userNo], (err, result, fields) => {
         if (result && result.length != 0) {
             result.pop();
             console.log(result);

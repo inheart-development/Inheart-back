@@ -12,9 +12,9 @@ router.get('/surveylist', isLoggedIn, (req, res, next) => {
     const {
         userNo
     } = req.body;
-    let q = "select * from survey where userNo = '" + userNo + "';";
+    // let q = "select * from survey where userNo = '" + userNo + "';";
 
-    con.query(q, (err, result, fields) => {
+    con.query("select * from survey where userNo =?", [userNo], (err, result, fields) => {
         if (result && result.length != 0) {
             console.log(result);
             return res.status(200).json(result);
