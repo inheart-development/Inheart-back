@@ -5,7 +5,7 @@ const con = require('../db/db');
 const {
     isLoggedIn,
     isNotLoggedIn
-} = require('./logincheck');
+} = require('../check/check');
 
 
 router.get('/surveylist', isLoggedIn, (req, res, next) => {

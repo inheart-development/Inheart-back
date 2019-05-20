@@ -9,7 +9,7 @@ const passport = require('passport');
 const {
     isLoggedIn,
     isNotLoggedIn
-} = require('./logincheck');
+} = require('../check/check');
 
 fs.readdir('profileImage', (error) => { //프로필 사진 저장 폴더 확인
     if (error) {

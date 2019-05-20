@@ -8,7 +8,7 @@ const con = require('../db/db');
 
 const {
     isLoggedIn
-} = require('./logincheck');
+} = require('../check/check');
 
 //오류나서 잠시 주석
 // fs.readdir('feelImage', isLoggedIn, (error) => {

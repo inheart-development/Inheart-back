@@ -4,8 +4,7 @@ const mysql = require('mysql');
 const con = require('../db/db');
 const {
     isLoggedIn
-} = require('./logincheck');
-
+} = require('../check/check');
 router.get('/starlist', isLoggedIn, (req, res, next) => {
     const {
         userNo,
