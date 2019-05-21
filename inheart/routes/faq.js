@@ -10,6 +10,9 @@ const util = require("../check/util");
 
 router.get('/list', (req, res, next) => {
     const {} = req.body;
+
+
+
     let q = "select * from faq;";
     console.log(q)
     con.query(q, (err, result, fields) => {

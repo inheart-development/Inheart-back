@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const nowTime = require("date-utils");
 const passport = require("passport");
 const flash = require("connect-flash");
+const util = require("./check/util");
 require("dotenv").config();
 //---------------------router----------------------
 const contentsRouter = require("./routes/contents");
@@ -70,6 +71,16 @@ app.use(function (req, res, next) {
     next();
 });
 
+
+
+app.use('/', function(req, res, next) {
+    var contype = req.headers['content-type'];
+    if (!contype || contype.indexOf('application/json') !== 0)
+      return res.status(406).json(util.successFalse(null,"content-type을 application/json으로 지정해주세요"));
+    next();
+  });
+
+
 app.use("/img", express.static("img"));
 app.use("/sound", express.static("sound"));
 
@@ -89,6 +100,9 @@ app.use((req, res, next) => {
     err.status = 404;
     next(err);
 });
+
+
+
 
 app.use((err, req, res) => {
     res.locals.message = err.message;
