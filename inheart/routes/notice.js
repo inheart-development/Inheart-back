@@ -5,8 +5,10 @@ const con = require('../db/db');
 const {
     isLoggedIn
 } = require('../check/check');
+const util = require("../check/util");
 
-router.post('/noticelist', isLoggedIn, (req, res, next) => {
+
+router.post('/list', isLoggedIn, (req, res, next) => {
     const {
         userNo
     } = req.body;
@@ -14,18 +16,22 @@ router.post('/noticelist', isLoggedIn, (req, res, next) => {
 
     // console.log(q)
     con.query("select * from notice where userNo =?", [userNo], (err, result, fields) => {
-        if (result && result.length != 0) {
+        if(err){ //에러체크
+            return res.status(400).json(util.successFalse(err,"검색 실패"));
+        }
+        
+
+        if (result && result.length != 0) { //result 결과값이 있으면
+  
             console.log(result);
-            return res.status(200).json(result);
-
+            return res.status(200).json(util.successTrue(result));
         } else {
-            return res.sendStatus(204);
-
+            return res.sendstatus(204)               
         }
     });
 });
 
-router.post('/initnotice', isLoggedIn, (req, res, next) => {
+router.post('/', isLoggedIn, (req, res, next) => {
     const {
         userNo,
         noticeTime,
@@ -35,20 +41,24 @@ router.post('/initnotice', isLoggedIn, (req, res, next) => {
     // console.log(q)
     con.query("insert into notice values(0,?,?,?)", [userNo, noticeTime, noticeBool], (err, result, fields) => {
 
-        if (err) {
-            return res.sendStatus(204);
-            throw err;
+        if(err){ //에러체크
+            return res.status(400).json(util.successFalse(err,"입력 실패"));
         }
+        
 
-        // if there is no error, you have the result
-        console.log(result);
-        return res.sendStatus(201)
+        if (result && result.length != 0) { //result 결과값이 있으면
+  
+            console.log(result);
+            return res.status(201).json(util.successTrue(result));
+        } else {
+            return res.sendstatus(204)               
+        }
 
     });
 });
 
 
-router.post('/noticebool', isLoggedIn, (req, res, next) => {
+router.post('/on-off', isLoggedIn, (req, res, next) => {
     const {
         noticeBool,
         noticeNo
@@ -59,18 +69,28 @@ router.post('/noticebool', isLoggedIn, (req, res, next) => {
 
     con.query("update notice set noticeBool=? where noticeNo=?", [noticeBool, noticeNo], (err, result, fields) => {
 
-        if (err) {
-            res.sendStatus(204);
-            throw err;
+        if(err){ //에러체크
+            return res.status(400).json(util.successFalse(err,"업데이트 실패"));
         }
-        // if there is no error, you have the result
-        console.log(result);
-        res.sendStatus(200)
+        
+
+        if (result && result.length != 0) { //result 결과값이 있으면
+  
+            console.log(result);
+            return res.status(200).json(util.successTrue(result));
+        } else {
+            return res.sendstatus(204)               
+        }
 
     });
 
     return;
 });
+
+
+
+//알림 삭제 추가하기
+
 
 
 module.exports = router;

@@ -91,9 +91,9 @@ router.post(
 
         //console.log(userName+" "+userEmail+" "+userPw);
         // let q1 = "select userEmail from user where userName=" + userEmail;
-        con.query("select userEmail from user where userName=?", [userEmail], (err, result, fields) => {
+        con.query("select userEmail from user where userEmail=?", [userEmail], (err, result, fields) => {
             if (result && result.length != 0) {
-                res.json(util.successFalse(null,"이미있는 아이디입니다."))
+                res.status(400).json(util.successFalse(null,"이미있는 아이디입니다."))
             }
         });
         // var userNumber;
@@ -114,14 +114,17 @@ router.post(
         //     userNumber +
         //     "')";
         con.query("insert into user values('0',?,?,?,?)", [userEmail, userName, Pw, userNumber], (err, result, fields) => {
+            
+            if(err){
+                return res.status(400).json(util.successFalse(err,"입력 실패"));
+            }
+
             if (result && result.length != 0) {
-                //console.log(result);
+
                 console.log(result);
                 return res.status(201).json(util.successTrue(result));
             } else {
-
-                //실패 아닌가 보류
-                return res.status(400).json(util.successFalse(err,"입력 실패"));
+                return res.sendstatus(204)               
             }
         });
     }
@@ -134,7 +137,17 @@ router.delete("/exit", (req, res, next) => {
     console.log(userNo);
     let q = "delete from user where userNo =" + userNo;
     con.query(q, (err, result, fields) => {
-        return res.sendStatus(200);
+        if(err){ //에러체크
+            return res.status(400).json(util.successFalse(err,"삭제 실패"));
+        }
+
+        if (result && result.length != 0) { //result 결과값이 있으면
+
+            console.log(result);
+            return res.status(200).json(util.successTrue(result));
+        } else {
+            return res.sendstatus(204)               
+        }
     });
 });
 
@@ -142,17 +155,27 @@ router.get('/meditotal', (req, res, next) => {
     const {
         userNo
     } = req.body;
+
+    //userNo는 다 토큰형식으로 바꾼다
+
     // let q =
     //     "select c.categoryNo, (select count(*) from feel f where f.contentsNo in (select co.contentsNo from contents co where co.categoryNo = c.categoryNo) and userNo = '" +
     //     userNo +
     //     "') `count` from category = c";
     con.query("select c.categoryNo, (select count(*) from feel f where f.contentsNo in (select co.contentsNo from contents co where co.categoryNo = c.categoryNo) and userNo =?) `count` from category = c", [userNo], (err, result, fields) => {
-        if (result && result.length != 0) {
-            result.pop();
+        
+        if(err){ //에러체크
+            return res.status(400).json(util.successFalse(err,"입력 실패"));
+        }
+        
+        result.pop()
+
+        if (result && result.length != 0) { //result 결과값이 있으면
+            //console.log(result);
             console.log(result);
-            return res.status(201).json(result);
+            return res.status(201).json(util.successTrue(result));
         } else {
-            return res.sendStatus(204);
+            return res.sendstatus(204)               
         }
     });
 });
