@@ -11,7 +11,8 @@ const {
     isNotLoggedIn
 } = require('../check/check');
 
-const util = require("../check/util")
+const util = require("../check/util");
+
 
 fs.readdir("profileImage", error => {
     //프로필 사진 저장 폴더 확인
@@ -114,12 +115,13 @@ router.post(
         //     "')";
         con.query("insert into user values('0',?,?,?,?)", [userEmail, userName, Pw, userNumber], (err, result, fields) => {
             if (result && result.length != 0) {
+                //console.log(result);
                 console.log(result);
-                return res.status(201).json(result);
+                return res.status(201).json(util.successTrue(result));
             } else {
 
                 //실패 아닌가 보류
-                return res.sendStatus(204);
+                return res.status(400).json(util.successFalse(err,"입력 실패"));
             }
         });
     }
