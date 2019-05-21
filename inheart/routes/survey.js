@@ -25,7 +25,7 @@ router.get('/list', isLoggedIn, (req, res, next) => {
             console.log(result);
             return res.status(200).json(util.successTrue(result));
         } else {
-            return res.sendstatus(204)               
+            return res.sendStatus(204)               
         }
     });
 });
@@ -57,9 +57,18 @@ router.post('/', isLoggedIn, (req, res, next) => {
             console.log(result);
             return res.status(201).json(util.successTrue(result));
         } else {
-            return res.sendstatus(204)               
+            return res.sendStatus(204)               
         }
     });
+});
+
+
+router.all('/list',(req,res,next)=>{
+    return res.status(405).json(util.successFalse(null,"요청 메서드를 확인하세요"))
+});
+
+router.all('/',(req,res,next)=>{
+    return res.status(405).json(util.successFalse(null,"요청 메서드를 확인하세요"))
 });
 
 module.exports = router;

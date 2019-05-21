@@ -124,7 +124,7 @@ router.post(
                 console.log(result);
                 return res.status(201).json(util.successTrue(result));
             } else {
-                return res.sendstatus(204)               
+                return res.sendStatus(204)               
             }
         });
     }
@@ -146,7 +146,7 @@ router.delete("/exit", (req, res, next) => {
             console.log(result);
             return res.status(200).json(util.successTrue(result));
         } else {
-            return res.sendstatus(204)               
+            return res.sendStatus(204)               
         }
     });
 });
@@ -175,9 +175,27 @@ router.get('/meditotal', (req, res, next) => {
             console.log(result);
             return res.status(201).json(util.successTrue(result));
         } else {
-            return res.sendstatus(204)               
+            return res.sendStatus(204)               
         }
     });
 });
+
+router.all('/login',(req,res,next)=>{
+    return res.status(405).json(util.successFalse(null,"요청 메서드를 확인하세요"))
+});
+
+router.all('/logout',(req,res,next)=>{
+    return res.status(405).json(util.successFalse(null,"요청 메서드를 확인하세요"))
+});
+router.all('/signup',(req,res,next)=>{
+    return res.status(405).json(util.successFalse(null,"요청 메서드를 확인하세요"))
+});
+router.all('/exit',(req,res,next)=>{
+    return res.status(405).json(util.successFalse(null,"요청 메서드를 확인하세요"))
+});
+router.all('/meditotal',(req,res,next)=>{
+    return res.status(405).json(util.successFalse(null,"요청 메서드를 확인하세요"))
+});
+
 
 module.exports = router;
