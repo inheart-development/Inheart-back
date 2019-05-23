@@ -73,13 +73,13 @@ app.use(function (req, res, next) {
 
 
 
-app.use('/', function (req, res, next) {
-    console.log(req.headers)
-    var contype = req.headers['content-type'];
-    if (!contype || contype.indexOf('application/json') !== 0)
-        return res.status(406).json(util.successFalse(null, "content-type을 application/json으로 지정해주세요"));
-    next();
-});
+// app.use('/', function (req, res, next) {
+//     console.log(req.headers)
+//     var contype = req.headers['content-type'];
+//     if (!contype || contype.indexOf('application/json') !== 0)
+//         return res.status(406).json(util.successFalse(null, "content-type을 application/json으로 지정해주세요"));
+//     next();
+// });
 
 
 // app.use("/img", express.static("img"));

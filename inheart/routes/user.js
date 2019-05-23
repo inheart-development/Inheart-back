@@ -37,6 +37,7 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
             req.flash("loginError", info.message);
             return res.redirect("/");
         }
+        console.log("성공");
         return req.login(user, loginError => {
             if (loginError) {
                 console.error(loginError);
@@ -47,10 +48,11 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
     })(req, res, next);
 });
 
-// router.post('/login', passport.authenticate('local', {
+// router.post('/login', isNotLoggedIn, passport.authenticate('local', {
 //     failureRedirect: '/'
 // }), (req, res) => {
 //     res.redirect('/');
+//     console.log("성공");
 // });
 
 router.get("/logout", isLoggedIn, (req, res) => {
