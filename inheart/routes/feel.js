@@ -10,7 +10,7 @@ const {
     isLoggedIn
 } = require("../check/check");
 
-const upload = multer({
+const upload2 = multer({
     storage: multer.diskStorage({
         destination(req, file, cb) {
             cb(null, "feelImage/");
@@ -83,7 +83,7 @@ router.get("/list", isLoggedIn, (req, res, next) => {
     );
 });
 
-router.post("/", isLoggedIn, upload.single("feelImage"), (req, res, next) => {
+router.post("/", isLoggedIn, upload2.single("feelImage"), (req, res, next) => {
     const {
         userNo,
         contentsNo,

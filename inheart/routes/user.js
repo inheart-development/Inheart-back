@@ -59,6 +59,7 @@ router.get("/logout", isLoggedIn, (req, res) => {
     res.redirect("/");
 });
 
+
 router.post( //프사는 profileImage폴더에 파일이름+업로드날짜+확장자 로 저장한다.
     "/signup",
     // isNotLoggedIn,

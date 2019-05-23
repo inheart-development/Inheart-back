@@ -18,7 +18,7 @@ const starRouter = require("./routes/star");
 const statisRouter = require("./routes/statis");
 const surveyRouter = require("./routes/survey");
 const userRouter = require("./routes/user");
-const passportConfig = require("./passport/passport"); 
+const passportConfig = require("./passport/passport");
 
 //---------------------router------------------------
 
@@ -70,16 +70,16 @@ app.use(function (req, res, next) {
 
     next();
 });
- 
 
 
-app.use('/', function(req, res, next) {
+
+app.use('/', function (req, res, next) {
     console.log(req.headers)
     var contype = req.headers['content-type'];
     if (!contype || contype.indexOf('application/json') !== 0)
-      return res.status(406).json(util.successFalse(null,"content-type을 application/json으로 지정해주세요"));
+        return res.status(406).json(util.successFalse(null, "content-type을 application/json으로 지정해주세요"));
     next();
-  });
+});
 
 
 // app.use("/img", express.static("img"));
@@ -102,7 +102,7 @@ app.use("/user", userRouter);
 app.use((req, res, next) => {
     const err = new Error("Not Found");
     err.status = 404;
-    return res.status(404).json(util.successFalse(err,"파일 찾을 수 없음"))
+    return res.status(404).json(util.successFalse(err, "파일 찾을 수 없음"))
 });
 
 
