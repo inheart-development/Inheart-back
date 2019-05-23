@@ -4,47 +4,18 @@ const multer = require('multer');
 const path = require('path');
 // const fs = require('fs');
 const con = require('../db/db');
-
-
 const {
     isLoggedIn
 } = require('../check/check');
 
-//오류나서 잠시 주석
-// fs.readdir('feelImage', isLoggedIn, (error) => {
-//     if (error) {
-//         console.error('feelImage 폴더가 없어 uploads 폴더를 생성합니다.');
-//         fs.mkdirSync('feelImage');
-//     }
-// });
-
-// var feelNumber;
-// let q2 = "select max(feelNo)+1 from feel"; //프로필 사진 이름
-// con.query(q2, (err, result, fields) => {
-//     feelNumber = result;
-// });
-
-// let storage = multer.diskStorage({
-//     destination: function(req, file ,callback){
-//       callback(null, "./feelImage/");
-//     },
-//     filename: function(req, file, callback){
-//       let extension=path.extname(file.originalname);
-//       callback(null,feelNumber+extension);
-//     }
-//   });
-
-//   let upload = multer({
-//     storage: storage
-//   });
 const upload = multer({
     storage: multer.diskStorage({
         destination(req, file, cb) {
             cb(null, 'feelImage/');
         },
         filename(req, file, cb) {
-            const ext = path.extname(file.originalname);
-            cb(null, feelNumber + ext);
+            const ext = path.extname(file.originalname); //파일의 확장자를 ext에 저장
+            cb(null, path.basename(file.originalname, ext) + new Date().valueOf() + ext); //파일이름+업로드날짜+확장자
         }
     })
 });

@@ -13,21 +13,15 @@ const {
 
 const util = require("../check/util")
 
-fs.readdir("profileImage", error => {
-    //프로필 사진 저장 폴더 확인
-    if (error) {
-        console.error("profileImage 폴더가 없어 profileImage 폴더를 생성합니다.");
-        fs.mkdirSync("profileImage");
-    }
-});
+// fs.readdir("profileImage", error => {
+//     //프로필 사진 저장 폴더 확인
+//     if (error) {
+//         console.error("profileImage 폴더가 없어 profileImage 폴더를 생성합니다.");
+//         fs.mkdirSync("profileImage");
+//     }
+// });
 
-var userNumber;
-let q2 = "select max(userNo)+1 from user"; //프로필 사진 이름
-con.query(q2, (err, result, fields) => {
-    userNumber = result;
-});
-
-const upload = multer({
+var upload = multer({
     storage: multer.diskStorage({
         //서버 디스크에 저장
         destination(req, file, cb) {
@@ -35,7 +29,7 @@ const upload = multer({
         },
         filename(req, file, cb) {
             const ext = path.extname(file.originalname); //파일의 확장자를 ext에 저장
-            cb(null, userNumber + ext); //userNumber로 프사 저장
+            cb(null, path.basename(file.originalname, ext) + new Date().valueOf() + ext); //파일이름+업로드날짜+확장자
         }
     })
 });
@@ -60,11 +54,11 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
     })(req, res, next);
 });
 
-router.post('/login', passport.authenticate('local', {
-    failureRedirect: '/'
-}), (req, res) => {
-    res.redirect('/');
-});
+// router.post('/login', passport.authenticate('local', {
+//     failureRedirect: '/'
+// }), (req, res) => {
+//     res.redirect('/');
+// });
 
 router.get("/logout", isLoggedIn, (req, res) => {
     req.logout();
@@ -72,47 +66,30 @@ router.get("/logout", isLoggedIn, (req, res) => {
     res.redirect("/");
 });
 
-router.post(
+router.post( //프사는 profileImage폴더에 파일이름+업로드날짜+확장자 로 저장한다.
     "/signup",
-    isNotLoggedIn,
+    // isNotLoggedIn,
     upload.single("userImage"),
     (req, res, next) => {
+        console.log(req.file);
         res.header("Access-Control-Allow-Headers", "multipart/form-data");
         const {
             userName,
             userEmail,
             userPw
         } = req.body;
-        let Pw = crypto
-            .createHash("sha512")
-            .update(userPw)
-            .digest("base64");
+        let Imgname = req.file.filename; //이미지이름
+        let Pw = userPw //추후 암호화 추가
+        console.log(req.body);
 
-        //console.log(userName+" "+userEmail+" "+userPw);
         // let q1 = "select userEmail from user where userName=" + userEmail;
         con.query("select userEmail from user where userName=?", [userEmail], (err, result, fields) => {
             if (result && result.length != 0) {
-                res.json(util.successFalse(null,"이미있는 아이디입니다."))
+                res.json(util.successFalse(null, "이미있는 아이디입니다."))
             }
         });
-        // var userNumber;
-        // let q2="select max(userNo)+1 from user"; //프로필 사진 이름
-        // con.query(q2,(err,result,fields)=>{
-        //     userNumber=result;
-        // });
-        // console.log(userNumber);
-        //--------------------------------------
-        // let q =
-        //     "insert into user values('0','" +
-        //     userEmail +
-        //     "','" +
-        //     userName +
-        //     "','" +
-        //     Pw +
-        //     "','" +
-        //     userNumber +
-        //     "')";
-        con.query("insert into user values('0',?,?,?,?)", [userEmail, userName, Pw, userNumber], (err, result, fields) => {
+
+        con.query("insert into user values('0',?,?,?,?)", [userEmail, userName, Pw, Imgname], (err, result, fields) => {
             if (result && result.length != 0) {
                 console.log(result);
                 return res.status(201).json(result);

@@ -70,10 +70,11 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use("/img", express.static("img"));
+// app.use("/img", express.static("img"));
 app.use("/sound", express.static("sound"));
-
+app.use("/pImg", express.static(path.join(__dirname, "profileImage"))); //profileImage에 있는 사진들이 pImg 주소로 제공된다.
 //---------------------router------------------------
+
 app.use("/contents", contentsRouter);
 app.use("/faq", faqRouter);
 app.use("/feel", feelRouter);
