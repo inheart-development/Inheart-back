@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const nowTime = require("date-utils");
 const passport = require("passport");
 const flash = require("connect-flash");
+const util = require("./check/util");
 require("dotenv").config();
 //---------------------router----------------------
 const contentsRouter = require("./routes/contents");
@@ -17,7 +18,7 @@ const starRouter = require("./routes/star");
 const statisRouter = require("./routes/statis");
 const surveyRouter = require("./routes/survey");
 const userRouter = require("./routes/user");
-const passportConfig = require("./passport/passport");
+const passportConfig = require("./passport/passport"); 
 
 //---------------------router------------------------
 
@@ -59,16 +60,27 @@ app.use(passport.session()); //express-session에서 생성하는 것이므로 e
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-    //res.header('Access-Control-Allow-Headers', 'content-type, x-access-token');
+    // res.header('Access-Control-Allow-Headers', 'content-type, x-access-token');
     res.header("Access-Control-Allow-Headers", "content-type");
     res.header("X-Content-Type-Options", "nosniff");
     res.header("X-Frame-Options", "deny");
     res.header("Content-Security-Policy", "default-src 'none'");
     res.removeHeader("x-Powered-By");
-    res.header("content-type", "appllication/json");
+    res.header("Content-Type", "application/json");
 
     next();
 });
+ 
+
+
+app.use('/', function(req, res, next) {
+    console.log(req.headers)
+    var contype = req.headers['content-type'];
+    if (!contype || contype.indexOf('application/json') !== 0)
+      return res.status(406).json(util.successFalse(null,"content-type을 application/json으로 지정해주세요"));
+    next();
+  });
+
 
 // app.use("/img", express.static("img"));
 app.use("/sound", express.static("sound"));
@@ -85,11 +97,16 @@ app.use("/survey", surveyRouter);
 app.use("/user", userRouter);
 //---------------------router------------------------
 
+
+
 app.use((req, res, next) => {
     const err = new Error("Not Found");
     err.status = 404;
-    next(err);
+    return res.status(404).json(util.successFalse(err,"파일 찾을 수 없음"))
 });
+
+
+
 
 app.use((err, req, res) => {
     res.locals.message = err.message;

@@ -1,29 +1,41 @@
-const express = require('express');
-const router = require('express').Router();
-const mysql = require('mysql');
-const con = require('../db/db');
-const {
-    isLoggedIn
-} = require('../check/check');
+const express = require("express");
+const router = require("express").Router();
+const mysql = require("mysql");
+const con = require("../db/db");
+const { isLoggedIn } = require("../check/check");
+const util = require("../check/util");
 
-router.post('/init', isLoggedIn, (req, res, next) => {
-    const {
-        userNo,
-    } = req.body;
-    let q = "insert into conlog values('0','" + userNo + "','" + new Date().toFormat("YYYY-MM-DD HH24:MI:SS") + "');";
-    console.log(q)
+router.post("/", isLoggedIn, (req, res, next) => {
+    const { userNo } = req.body;
+    let q =
+        "insert into conlog values('0','" +
+        userNo +
+        "','" +
+        new Date().toFormat("YYYY-MM-DD HH24:MI:SS") +
+        "');";
+    console.log(q);
 
     con.query(q, (err, result, fields) => {
-
         if (err) {
-            return res.sendStatus(204);
-            throw err;
+            //에러체크
+            return res.status(400).json(util.successFalse(err, "입력 실패"));
         }
-        // if there is no error, you have the result
-        console.log(result);
-        return res.sendStatus(201);
 
+        if (result && result.length != 0) {
+            //result 결과값이 있으면
+
+            console.log(result);
+            return res.status(201).json(util.successTrue(result));
+        } else {
+            return res.sendStatus(204);
+        }
     });
+});
+
+router.all("/", (req, res, next) => {
+    return res
+        .status(405)
+        .json(util.successFalse(null, "요청 메서드를 확인하세요"));
 });
 
 module.exports = router;
