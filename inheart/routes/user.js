@@ -6,13 +6,9 @@ const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
 const passport = require("passport");
-const {
-    isLoggedIn,
-    isNotLoggedIn
-} = require("../check/check");
+const { isLoggedIn, isNotLoggedIn } = require("../check/check");
 
 const util = require("../check/util");
-
 
 var upload = multer({
     storage: multer.diskStorage({
@@ -22,7 +18,12 @@ var upload = multer({
         },
         filename(req, file, cb) {
             const ext = path.extname(file.originalname); //파일의 확장자를 ext에 저장
-            cb(null, path.basename(file.originalname, ext) + new Date().valueOf() + ext); //파일이름+업로드날짜+확장자
+            cb(
+                null,
+                path.basename(file.originalname, ext) +
+                    new Date().valueOf() +
+                    ext
+            ); //파일이름+업로드날짜+확장자
         }
     })
 });
@@ -44,7 +45,9 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
                 console.error(loginError);
                 return next(loginError);
             }
-            return res.redirect("/");
+
+            //리다이렉트를 하면안됨
+            return res.json(util.successTrue(user));
         });
     })(req, res, next);
 });
@@ -59,24 +62,20 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
 router.get("/logout", isLoggedIn, (req, res) => {
     req.logout();
     req.session.destroy();
-    res.redirect("/");
+    res.status(200).json(util.successTrue("로그아웃 성공"));
 });
 
-
-router.post( //프사는 profileImage폴더에 파일이름+업로드날짜+확장자 로 저장한다.
+router.post(
+    //프사는 profileImage폴더에 파일이름+업로드날짜+확장자 로 저장한다.
     "/signup",
     // isNotLoggedIn,
     upload.single("userImage"),
     (req, res, next) => {
         console.log(req.file);
         res.header("Access-Control-Allow-Headers", "multipart/form-data");
-        const {
-            userName,
-            userEmail,
-            userPw
-        } = req.body;
+        const { userName, userEmail, userPw } = req.body;
         let Imgname = req.file.filename; //이미지이름
-        let Pw = userPw //추후 암호화 추가
+        let Pw = userPw; //추후 암호화 추가
         console.log(req.body);
 
         // let q1 = "select userEmail from user where userName=" + userEmail;
@@ -118,9 +117,7 @@ router.post( //프사는 profileImage폴더에 파일이름+업로드날짜+확�
 );
 
 router.delete("/exit", (req, res, next) => {
-    const {
-        userNo
-    } = req.body;
+    const { userNo } = req.body;
     console.log(userNo);
     let q = "delete from user where userNo =" + userNo;
     con.query(q, (err, result, fields) => {
@@ -141,9 +138,7 @@ router.delete("/exit", (req, res, next) => {
 });
 
 router.get("/meditotal", (req, res, next) => {
-    const {
-        userNo
-    } = req.body;
+    const { userNo } = req.body;
 
     //userNo는 다 토큰형식으로 바꾼다
 
