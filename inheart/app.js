@@ -24,7 +24,7 @@ const passportConfig = require("./passport/passport");
 
 const app = express();
 passportConfig(); //passport 내부의 코드를 실행하기 위해
-app.set("port", process.env.PORT || 8001);
+app.set("port", process.env.PORT || 3000);
 
 app.use(morgan("dev"));
 app.use(express.json());
