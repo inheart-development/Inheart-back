@@ -16,7 +16,7 @@ module.exports = () => {
         //매 요청시 실행, passport.session() 미들웨어가 이 메서드 호출
         let q = "select * from user where userNo='" + userNumber + "'";
         con.query(q, (err, result, fields) => {
-            done(null, result[0]);
+            if (!err) done(null, userNumber);
         });
         // done(null, user);
     });
@@ -61,7 +61,7 @@ module.exports = () => {
                             // console.log(result[0].userNo); //출력 테스트 완료!
 
                             let payload = {
-                                no: getUserNo
+                                userNo: getUserNo
                             };
                             let token = jwt.encode(payload, cfg.jwtSecret);
 

@@ -4,9 +4,20 @@ const mysql = require("mysql");
 const con = require("../db/db");
 const { isLoggedIn } = require("../check/check");
 const util = require("../check/util");
+const auth = require("./auth")();
 
-router.post("/", isLoggedIn, (req, res, next) => {
-    const { userNo } = req.body;
+router.post("/", auth.authenticate(), isLoggedIn, (req, res, next) => {
+    const userNo = req.user.userNo;
+    if (userNo === -1)
+        return res
+            .status(401)
+            .json(
+                util.successFalse(
+                    null,
+                    "토큰으로 부터 유저정보를 얻을 수 없습니다."
+                )
+            );
+
     let q =
         "insert into conlog values('0','" +
         userNo +

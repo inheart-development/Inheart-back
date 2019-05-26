@@ -3,9 +3,21 @@ const router = require("express").Router();
 const mysql = require("mysql");
 const con = require("../db/db");
 const { isLoggedIn, isNotLoggedIn } = require("../check/check");
+const auth = require("./auth")();
+const util = require("../check/util");
 
-router.get("/list", isLoggedIn, (req, res, next) => {
-    const { userNo } = req.body;
+router.get("/list", auth.authenticate(), (req, res, next) => {
+    const userNo = req.user.userNo;
+    if (userNo === -1)
+        return res
+            .status(401)
+            .json(
+                util.successFalse(
+                    null,
+                    "토큰으로 부터 유저정보를 얻을 수 없습니다."
+                )
+            );
+
     // let q = "select * from survey where userNo = '" + userNo + "';";
 
     con.query(
@@ -31,9 +43,8 @@ router.get("/list", isLoggedIn, (req, res, next) => {
     );
 });
 
-router.post("/", isLoggedIn, (req, res, next) => {
+router.post("/", auth.authenticate(), (req, res, next) => {
     const {
-        userNo,
         survey_1,
         survey_2,
         survey_3,
@@ -43,6 +54,17 @@ router.post("/", isLoggedIn, (req, res, next) => {
         survey_7,
         survey_8
     } = req.body;
+
+    const userNo = req.user.userNo;
+    if (userNo === -1)
+        return res
+            .status(401)
+            .json(
+                util.successFalse(
+                    null,
+                    "토큰으로 부터 유저정보를 얻을 수 없습니다."
+                )
+            );
 
     let q =
         "insert into survey values('0','" +

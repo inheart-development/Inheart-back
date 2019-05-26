@@ -3,13 +3,28 @@ const router = express.Router();
 const mysql = require("mysql");
 const con = require("../db/db");
 const util = require("../check/util");
+const auth = require("./auth")();
 
-router.post("/star/list", (req, res, next) => {
-    const { categoryNo, userNo } = req.body;
+router.get("/star/list", auth.authenticate(), (req, res, next) => {
+    const { categoryNo } = req.query;
+    if (categoryNo == null) {
+    }
+    const userNo = req.user.userNo;
+
+    if (userNo === -1)
+        return res
+            .status(401)
+            .json(
+                util.successFalse(
+                    null,
+                    "토큰으로 부터 유저정보를 얻을 수 없습니다."
+                )
+            );
+
     // let q = "select c.*, (if(c.contentsNo in(select s.contentsNo  from star s where userNo = '" + userNo + "') ,True,False)) contentsStar from contents c where c.categoryNo = '" + categoryNo + "' order by contentsIndex;";
     //console.log(q)
     con.query(
-        "select c.*,(if(c.contentsNo in(select s.contentsNo from start s where userNo=?),True,False)) contentsStar from contents c where c.categoryNo=? order by contentsIndex",
+        "select c.*,(if(c.contentsNo in(select s.contentsNo from star s where userNo=?),True,False)) contentsStar from contents c where c.categoryNo=? order by contentsIndex",
         [userNo, categoryNo],
         (err, result, fields) => {
             if (err) {
@@ -31,8 +46,21 @@ router.post("/star/list", (req, res, next) => {
     );
 });
 
-router.post("/category/list", (req, res, next) => {
-    const { categoryNo } = req.body;
+router.get("/category/list", auth.authenticate(), (req, res, next) => {
+    const { categoryNo } = req.query;
+
+    const userNo = req.user.userNo;
+
+    if (userNo === -1)
+        return res
+            .status(401)
+            .json(
+                util.successFalse(
+                    null,
+                    "토큰으로 부터 유저정보를 얻을 수 없습니다."
+                )
+            );
+
     //let q = "select * from contents where categoryNo = '" + categoryNo + "' order by contentsIndex;";
     //console.log(q)
     con.query(
@@ -58,8 +86,21 @@ router.post("/category/list", (req, res, next) => {
     );
 });
 
-router.post("/", (req, res, next) => {
-    const { contentsNo } = req.body;
+router.get("/", auth.authenticate(), (req, res, next) => {
+    const { contentsNo } = req.query;
+
+    const userNo = req.user.userNo;
+
+    if (userNo === -1)
+        return res
+            .status(401)
+            .json(
+                util.successFalse(
+                    null,
+                    "토큰으로 부터 유저정보를 얻을 수 없습니다."
+                )
+            );
+
     //let q = "select * from contents where contentsNo = '" + contentsNo + "' order by contentsIndex;";
     //console.log(q)
     con.query(
@@ -85,8 +126,21 @@ router.post("/", (req, res, next) => {
     );
 });
 
-router.get("/list", (req, res, next) => {
+router.get("/list", auth.authenticate(), (req, res, next) => {
     const {} = req.body;
+
+    const userNo = req.user.userNo;
+
+    if (userNo === -1)
+        return res
+            .status(401)
+            .json(
+                util.successFalse(
+                    null,
+                    "토큰으로 부터 유저정보를 얻을 수 없습니다."
+                )
+            );
+
     //let q = "select * from contents order by contentsIndex;";
     //console.log(q)
     con.query(

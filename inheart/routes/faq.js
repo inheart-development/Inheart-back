@@ -3,6 +3,7 @@ const router = express.Router();
 const mysql = require("mysql");
 const con = require("../db/db");
 const { isLoggedIn } = require("../check/check");
+const auth = require("./auth")();
 
 const util = require("../check/util");
 

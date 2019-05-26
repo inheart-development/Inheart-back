@@ -4,9 +4,20 @@ const mysql = require("mysql");
 const con = require("../db/db");
 const { isLoggedIn } = require("../check/check");
 const util = require("../check/util");
+const auth = require("./auth")();
 
-router.post("/list", isLoggedIn, (req, res, next) => {
-    const { userNo } = req.body;
+router.get("/list", auth.authenticate(), (req, res, next) => {
+    const userNo = req.user.userNo;
+
+    if (userNo === -1)
+        return res
+            .status(401)
+            .json(
+                util.successFalse(
+                    null,
+                    "토큰으로 부터 유저정보를 얻을 수 없습니다."
+                )
+            );
     // let q = "select * from notice where userNo = '" + userNo + "';";
 
     // console.log(q)
@@ -33,10 +44,21 @@ router.post("/list", isLoggedIn, (req, res, next) => {
     );
 });
 
-router.post("/", isLoggedIn, (req, res, next) => {
-    const { userNo, noticeTime, noticeBool } = req.body;
+router.post("/", auth.authenticate(), (req, res, next) => {
+    const { noticeTime, noticeBool } = req.body;
     // let q = "insert into notice values('0','" + userNo + "','" + noticeTime + "'," + noticeBool + ");";
     // console.log(q)
+    const userNo = req.user.userNo;
+    if (userNo === -1)
+        return res
+            .status(401)
+            .json(
+                util.successFalse(
+                    null,
+                    "토큰으로 부터 유저정보를 얻을 수 없습니다."
+                )
+            );
+
     con.query(
         "insert into notice values(0,?,?,?)",
         [userNo, noticeTime, noticeBool],
@@ -60,15 +82,26 @@ router.post("/", isLoggedIn, (req, res, next) => {
     );
 });
 
-router.post("/on-off", isLoggedIn, (req, res, next) => {
+router.post("/on-off", auth.authenticate(), (req, res, next) => {
     const { noticeBool, noticeNo } = req.body;
     // let q = "update notice set noticeBool = " + noticeBool + " where noticeNo = " + noticeNo + ";";
 
     // console.log(q)
 
+    const userNo = req.user.userNo;
+    if (userNo === -1)
+        return res
+            .status(401)
+            .json(
+                util.successFalse(
+                    null,
+                    "토큰으로 부터 유저정보를 얻을 수 없습니다."
+                )
+            );
+
     con.query(
-        "update notice set noticeBool=? where noticeNo=?",
-        [noticeBool, noticeNo],
+        "update notice set noticeBool=? where noticeNo=? and userNo=?",
+        [noticeBool, noticeNo, userNo],
         (err, result, fields) => {
             if (err) {
                 //에러체크
@@ -91,7 +124,7 @@ router.post("/on-off", isLoggedIn, (req, res, next) => {
     return;
 });
 
-router.all("/list", (req, res, next) => {
+router.all("/list", auth.authenticate(), (req, res, next) => {
     return res
         .status(405)
         .json(util.successFalse(null, "요청 메서드를 확인하세요"));

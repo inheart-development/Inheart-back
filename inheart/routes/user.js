@@ -7,6 +7,7 @@ const fs = require("fs");
 const crypto = require("crypto");
 const passport = require("passport");
 const { isLoggedIn, isNotLoggedIn } = require("../check/check");
+const auth = require("./auth")();
 
 const util = require("../check/util");
 
@@ -36,7 +37,7 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
         }
         if (!user) {
             req.flash("loginError", info.message);
-            return res.redirect("/");
+            return res.status(400).json(util.successFalse(null, info.message));
         }
         console.log("성공");
         console.log(user);
@@ -116,10 +117,21 @@ router.post(
     }
 );
 
-router.delete("/exit", (req, res, next) => {
-    const { userNo } = req.body;
-    console.log(userNo);
+router.delete("/exit", auth.authenticate(), (req, res, next) => {
+    const userNo = req.user.userNo;
+
+    if (userNo === -1)
+        return res
+            .status(400)
+            .json(
+                util.successFalse(
+                    null,
+                    "토큰으로 부터 유저정보를 얻을 수 없습니다."
+                )
+            );
+
     let q = "delete from user where userNo =" + userNo;
+    console.log(q);
     con.query(q, (err, result, fields) => {
         if (err) {
             //에러체크
@@ -137,8 +149,18 @@ router.delete("/exit", (req, res, next) => {
     });
 });
 
-router.get("/meditotal", (req, res, next) => {
-    const { userNo } = req.body;
+router.get("/meditotal", auth.authenticate(), (req, res, next) => {
+    const userNo = req.user.userNo;
+
+    if (userNo === -1)
+        return res
+            .status(400)
+            .json(
+                util.successFalse(
+                    null,
+                    "토큰으로 부터 유저정보를 얻을 수 없습니다."
+                )
+            );
 
     //userNo는 다 토큰형식으로 바꾼다
 

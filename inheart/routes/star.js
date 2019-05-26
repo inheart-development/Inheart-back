@@ -4,11 +4,21 @@ const mysql = require("mysql");
 const con = require("../db/db");
 const { isLoggedIn } = require("../check/check");
 const util = require("../check/util");
+const auth = require("./auth")();
 
-router.get("/list", isLoggedIn, (req, res, next) => {
-    const { userNo, categoryNo } = req.body;
-    // let q = "select c.* from contents c where c.categoryNo = '" + categoryNo + "' and c.contentsNo in (select s.contentsNo from star s where s.userNo = '" + userNo + "') order by contentsIndex; ";
-    // console.log(q)
+router.get("/list", auth.authenticate(), (req, res, next) => {
+    const { categoryNo } = req.query;
+
+    const userNo = req.user.userNo;
+    if (userNo === -1)
+        return res
+            .status(401)
+            .json(
+                util.successFalse(
+                    null,
+                    "토큰으로 부터 유저정보를 얻을 수 없습니다."
+                )
+            );
 
     con.query(
         "select c.* from contents c where c.categoryNo =? and c.contentsNo in (select s.contentsNo from star s where s.userNo =?) order by contentsIndex",
@@ -33,12 +43,24 @@ router.get("/list", isLoggedIn, (req, res, next) => {
     );
 });
 
-router.post("/", (req, res, next) => {
-    const { userNo, contentsNo } = req.body;
+router.post("/", auth.authenticate(), (req, res, next) => {
+    const { contentsNo } = req.body;
     //let q = "insert into star (starNo,userNo,contentsNo) values('0','" + userNo + "','" + contentsNo + "');";
     //console.log(q)
+
+    const userNo = req.user.userNo;
+    if (userNo === -1)
+        return res
+            .status(401)
+            .json(
+                util.successFalse(
+                    null,
+                    "토큰으로 부터 유저정보를 얻을 수 없습니다."
+                )
+            );
+
     con.query(
-        "insert into star (starNo,userNo,contentsNo)j values('0','?','?')",
+        "insert into star (starNo,userNo,contentsNo) values('0','?','?')",
         [userNo, contentsNo],
         (err, result, fields) => {
             if (err) {
@@ -60,10 +82,22 @@ router.post("/", (req, res, next) => {
     );
 });
 
-router.delete("/", (req, res, next) => {
-    const { userNo, contentsNo } = req.body;
+router.delete("/", auth.authenticate(), (req, res, next) => {
+    const { contentsNo } = req.body;
     //let q = "delete from star where userNo = '" + userNo + "' and contentsNo = '" + contentsNo + "';";
-    //console.log(q)
+    //console.log(q)\
+
+    const userNo = req.user.userNo;
+    if (userNo === -1)
+        return res
+            .status(401)
+            .json(
+                util.successFalse(
+                    null,
+                    "토큰으로 부터 유저정보를 얻을 수 없습니다."
+                )
+            );
+
     con.query(
         "delete from star where userNo=? and contentsNo=?",
         [userNo, contentsNo],
@@ -87,11 +121,19 @@ router.delete("/", (req, res, next) => {
     );
 });
 
-router.get("/", (req, res, next) => {
-    const { userNo, contentsNo } = req.body;
+router.get("/", auth.authenticate(), (req, res, next) => {
+    const { contentsNo } = req.query;
 
-    //let q = "select * from star where userNo = '" + userNo + "' and contentsNo = '" + contentsNo + "';";
-    //console.log(q)
+    const userNo = req.user.userNo;
+    if (userNo === -1)
+        return res
+            .status(401)
+            .json(
+                util.successFalse(
+                    null,
+                    "토큰으로 부터 유저정보를 얻을 수 없습니다."
+                )
+            );
 
     con.query(
         "select * from star where userNo =? and contentsNo=?",

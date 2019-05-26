@@ -57,11 +57,11 @@ app.use(passport.session()); //express-session에서 생성하는 것이므로 e
 // });
 
 //미들웨어 설정
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-    // res.header('Access-Control-Allow-Headers', 'content-type, x-access-token');
-    res.header("Access-Control-Allow-Headers", "content-type");
+    res.header("Access-Control-Allow-Headers", "content-type, Authorization");
+    //res.header("Access-Control-Allow-Headers", "content-type");
     res.header("X-Content-Type-Options", "nosniff");
     res.header("X-Frame-Options", "deny");
     res.header("Content-Security-Policy", "default-src 'none'");
@@ -71,8 +71,6 @@ app.use(function (req, res, next) {
     next();
 });
 
-
-
 // app.use('/', function (req, res, next) {
 //     console.log(req.headers)
 //     var contype = req.headers['content-type'];
@@ -80,7 +78,6 @@ app.use(function (req, res, next) {
 //         return res.status(406).json(util.successFalse(null, "content-type을 application/json으로 지정해주세요"));
 //     next();
 // });
-
 
 // app.use("/img", express.static("img"));
 app.use("/sound", express.static("sound"));
@@ -97,16 +94,11 @@ app.use("/survey", surveyRouter);
 app.use("/user", userRouter);
 //---------------------router------------------------
 
-
-
 app.use((req, res, next) => {
     const err = new Error("Not Found");
     err.status = 404;
-    return res.status(404).json(util.successFalse(err, "파일 찾을 수 없음"))
+    return res.status(404).json(util.successFalse(err, "파일 찾을 수 없음"));
 });
-
-
-
 
 app.use((err, req, res) => {
     res.locals.message = err.message;
