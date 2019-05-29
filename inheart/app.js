@@ -18,6 +18,7 @@ const starRouter = require("./routes/star");
 const statisRouter = require("./routes/statis");
 const surveyRouter = require("./routes/survey");
 const userRouter = require("./routes/user");
+const adminRouter = require("./routes/admin");
 const passportConfig = require("./passport/passport");
 
 //---------------------router------------------------
@@ -92,6 +93,7 @@ app.use("/star", starRouter);
 app.use("/statis", statisRouter);
 app.use("/survey", surveyRouter);
 app.use("/user", userRouter);
+app.use("/admin", adminRouter);
 //---------------------router------------------------
 
 app.use((req, res, next) => {
