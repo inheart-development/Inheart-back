@@ -18,7 +18,11 @@ const starRouter = require("./routes/star");
 const statisRouter = require("./routes/statis");
 const surveyRouter = require("./routes/survey");
 const userRouter = require("./routes/user");
-const adminRouter = require("./routes/admin");
+const admin_contentsRouter = require("./routes/routes_admin/contents");
+const admin_faqRouter = require("./routes/routes_admin/faq");
+const admin_serveyRouter = require("./routes/routes_admin/servey");
+const admin_statisRouter = require("./routes/routes_admin/statis");
+const admin_userRouter = require("./routes/routes_admin/user");
 const passportConfig = require("./passport/passport");
 
 //---------------------router------------------------
@@ -93,7 +97,12 @@ app.use("/star", starRouter);
 app.use("/statis", statisRouter);
 app.use("/survey", surveyRouter);
 app.use("/user", userRouter);
-app.use("/admin", adminRouter);
+app.use("/admin/statis", admin_statisRouter);
+app.use("/admin/contents", admin_contentsRouter);
+app.use("/admin/faq", admin_faqRouter);
+app.use("/admin/servey", admin_serveyRouter);
+app.use("/admin/user", admin_userRouter);
+app.use("/")
 //---------------------router------------------------
 
 app.use((req, res, next) => {
