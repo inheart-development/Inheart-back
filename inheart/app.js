@@ -57,7 +57,7 @@ app.use(passport.session()); //express-session에서 생성하는 것이므로 e
 // });
 
 //미들웨어 설정
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
     res.header("Access-Control-Allow-Headers", "content-type, Authorization");

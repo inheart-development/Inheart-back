@@ -1,4 +1,5 @@
 const passport = require("passport");
+const crypto = require('crypto');
 const LocalStrategy = require("passport-local").Strategy;
 const con = require("../db/db");
 var jwt = require("jwt-simple");
@@ -22,24 +23,26 @@ module.exports = () => {
     });
 
     passport.use(
-        new LocalStrategy(
-            {
+        new LocalStrategy({
                 usernameField: "userEmail",
                 passwordField: "userPw",
                 session: true,
                 passReqToCallback: false
             },
             (userEmail, userPw, done) => {
-                // let q =
-                //     "select * from user where userEmail = '" +
-                //     userEmail +
-                //     "' and userPw = '" +
-                //     userPw +
-                //     "'";
+                let loginsalt = 0;
+                let loginPw = 0;
+                con.query("select salt from user where userEmail=?", [userEmail], (err, result, fields) => {
+                    loginsalt = result;
+                });
+
+                crypto.pbkdf2(userPw, loginsalt, 12653, 64, 'sha512', (err, key) => {
+                    loginPw = key.toString('base64');
+                });
 
                 con.query(
                     "select * from user where userEmail=? and userPw=?",
-                    [userEmail, userPw],
+                    [userEmail, loginPw],
                     (err, result, fields) => {
                         if (err) return done(err);
                         else if (result == "") {

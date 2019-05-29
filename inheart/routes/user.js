@@ -6,7 +6,10 @@ const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
 const passport = require("passport");
-const { isLoggedIn, isNotLoggedIn } = require("../check/check");
+const {
+    isLoggedIn,
+    isNotLoggedIn
+} = require("../check/check");
 const auth = require("./auth")();
 
 const util = require("../check/util");
@@ -22,8 +25,8 @@ var upload = multer({
             cb(
                 null,
                 path.basename(file.originalname, ext) +
-                    new Date().valueOf() +
-                    ext
+                new Date().valueOf() +
+                ext
             ); //파일이름+업로드날짜+확장자
         }
     })
@@ -72,11 +75,27 @@ router.post(
     // isNotLoggedIn,
     upload.single("userImage"),
     (req, res, next) => {
-        console.log(req.file);
+        // console.log("이미지파일:" + req.file);
         res.header("Access-Control-Allow-Headers", "multipart/form-data");
-        const { userName, userEmail, userPw } = req.body;
-        let Imgname = req.file.filename; //이미지이름
-        let Pw = userPw; //추후 암호화 추가
+        const {
+            userEmail,
+            userName,
+            userPw
+        } = req.body;
+
+        let signImgname = req.file.filename; //이미지이름
+        let signPw = undefined;
+        let signsalt = undefined;
+
+
+        crypto.randomBytes(64, (err, buf) => { //pw단방향 암호화
+            signsalt = buf.toString('base64');
+            crypto.pbkdf2(userPw, signsalt, 12653, 64, 'sha512', (err, key) => {
+                signPw = key.toString('base64');
+            });
+        });
+        console.log("솔트:" + signsalt);
+
         console.log(req.body);
 
         // let q1 = "select userEmail from user where userName=" + userEmail;
@@ -93,8 +112,8 @@ router.post(
                         );
                 }
                 con.query(
-                    "insert into user values('0',?,?,?,?)",
-                    [userEmail, userName, Pw, Imgname],
+                    "insert into user values('0',?,?,?,?,?)",
+                    [userEmail, userName, signPw, signsalt, signImgname],
                     (err, result, fields) => {
                         if (err) {
                             return res
