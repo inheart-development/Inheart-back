@@ -10,19 +10,19 @@ const flash = require("connect-flash");
 const util = require("./check/util");
 require("dotenv").config();
 //---------------------router----------------------
-const contentsRouter = require("./routes/contents");
-const faqRouter = require("./routes/faq");
-const feelRouter = require("./routes/feel");
-const noticeRouter = require("./routes/notice");
-const starRouter = require("./routes/star");
-const statisRouter = require("./routes/statis");
-const surveyRouter = require("./routes/survey");
-const userRouter = require("./routes/user");
-const admin_contentsRouter = require("./routes/routes_admin/contents");
-const admin_faqRouter = require("./routes/routes_admin/faq");
-const admin_serveyRouter = require("./routes/routes_admin/servey");
-const admin_statisRouter = require("./routes/routes_admin/statis");
-const admin_userRouter = require("./routes/routes_admin/user");
+const contentsRouter = require("./routes/user/contents");
+const faqRouter = require("./routes/user/faq");
+const feelRouter = require("./routes/user/feel");
+const noticeRouter = require("./routes/user/notice");
+const starRouter = require("./routes/user/star");
+const statisRouter = require("./routes/user/statis");
+const surveyRouter = require("./routes/user/survey");
+const userRouter = require("./routes/user/user");
+const admin_contentsRouter = require("./routes/admin/contents");
+const admin_faqRouter = require("./routes/admin/faq");
+const admin_serveyRouter = require("./routes/admin/servey");
+const admin_statisRouter = require("./routes/admin/statis");
+const admin_userRouter = require("./routes/admin/user");
 const passportConfig = require("./passport/passport");
 
 //---------------------router------------------------
