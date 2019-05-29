@@ -200,14 +200,31 @@ router.get("/meditotal", auth.authenticate(), (req, res, next) => {
 
             result.pop();
 
-            if (result && result.length != 0) {
-                //result 결과값이 있으면
-                //console.log(result);
-                console.log(result);
-                return res.status(201).json(util.successTrue(result));
-            } else {
-                return res.sendStatus(204);
-            }
+            con.query(
+                "select userEmail, userName from user where userNo = ?",
+                [userNo],
+                (err2, result2, fields2) => {
+                    if (err) {
+                        //에러체크
+                        return res
+                            .status(400)
+                            .json(util.successFalse(err, "입력 실패"));
+                    }
+
+                    console.log(result2);
+
+                    result2[0].categoryNo_1 = result[0].count;
+                    result2[0].categoryNo_2 = result[1].count;
+                    result2[0].categoryNo_3 = result[2].count;
+                    result2[0].categoryNo_4 = result[3].count;
+
+                    if (result && result.length != 0) {
+                        return res.status(200).json(util.successTrue(result2));
+                    } else {
+                        return res.sendStatus(204);
+                    }
+                }
+            );
         }
     );
 });
