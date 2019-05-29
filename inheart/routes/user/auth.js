@@ -1,6 +1,6 @@
 const passport = require("passport");
 const passportJWT = require("passport-jwt");
-const cfg = require("../secret/jwt_config");
+const cfg = require("../../secret/jwt_config");
 const ExtractJwt = passportJWT.ExtractJwt;
 const Strategy = passportJWT.Strategy;
 const params = {
@@ -10,7 +10,7 @@ const params = {
     // header 의 경우 다음과 같이 써야 한다 { key: 'Authorization', value: 'JWT ' + 토큰
     jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme("JWT")
 };
-const con = require("../db/db");
+const con = require("../../db/db");
 
 module.exports = function() {
     let strategy = new Strategy(params, function(payload, done) {

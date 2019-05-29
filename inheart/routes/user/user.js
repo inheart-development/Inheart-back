@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const multer = require("multer");
-const con = require("../db/db");
+const con = require("../../db/db");
 const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
@@ -8,10 +8,10 @@ const passport = require("passport");
 const {
     isLoggedIn,
     isNotLoggedIn
-} = require("../check/check");
+} = require("../../check/check");
 const auth = require("./auth")();
 
-const util = require("../check/util");
+const util = require("../../check/util");
 
 var upload = multer({
     storage: multer.diskStorage({

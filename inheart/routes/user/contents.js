@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const mysql = require("mysql");
-const con = require("../db/db");
-const util = require("../check/util");
+const con = require("../../db/db");
+const util = require("../../check/util");
 const auth = require("./auth")();
 
 router.get("/star/list", auth.authenticate(), (req, res, next) => {

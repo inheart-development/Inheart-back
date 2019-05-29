@@ -3,11 +3,11 @@ const router = express.Router();
 const multer = require("multer");
 const path = require("path");
 // const fs = require('fs');
-const con = require("../db/db");
-const util = require("../check/util");
+const con = require("../../db/db");
+const util = require("../../check/util");
 const auth = require("./auth")();
 
-const { isLoggedIn } = require("../check/check");
+const { isLoggedIn } = require("../../check/check");
 
 const upload2 = multer({
     storage: multer.diskStorage({

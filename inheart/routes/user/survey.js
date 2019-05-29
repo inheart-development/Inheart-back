@@ -1,10 +1,10 @@
 const express = require("express");
 const router = require("express").Router();
 const mysql = require("mysql");
-const con = require("../db/db");
-const { isLoggedIn, isNotLoggedIn } = require("../check/check");
+const con = require("../../db/db");
+const { isLoggedIn, isNotLoggedIn } = require("../../check/check");
 const auth = require("./auth")();
-const util = require("../check/util");
+const util = require("../../check/util");
 
 router.get("/list", auth.authenticate(), (req, res, next) => {
     const userNo = req.user.userNo;
