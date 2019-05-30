@@ -81,57 +81,55 @@ router.post(
             userName,
             userPw
         } = req.body;
+        console.log(req.body);
 
-        let signImgname = req.file.filename; //이미지이름
+        const signImgname = req.file.filename; //이미지이름
         let signPw = undefined;
         let signsalt = undefined;
 
-
         crypto.randomBytes(64, (err, buf) => { //pw단방향 암호화
             signsalt = buf.toString('base64');
+            console.log("salt: " + signsalt);
             crypto.pbkdf2(userPw, signsalt, 12653, 64, 'sha512', (err, key) => {
                 signPw = key.toString('base64');
+                console.log("signPw: " + signPw);
+                // let q1 = "select userEmail from user where userName=" + userEmail;
+                con.query(
+                    "select userEmail from user where userEmail=?",
+                    [userEmail],
+                    (err, result, fields) => {
+                        if (result && result.length != 0) {
+                            return res
+                                .status(400)
+                                .json(
+                                    util.successFalse(null, "이미있는 아이디입니다.")
+                                );
+                        }
+                        con.query(
+                            "insert into user values('0',?,?,?,?,?)",
+                            [userEmail, userName, signPw, signImgname, signsalt],
+                            (err, result, fields) => {
+                                if (err) {
+                                    return res
+                                        .status(400)
+                                        .json(util.successFalse(err, "입력 실패"));
+                                }
+        
+                                if (result && result.length != 0) {
+                                    console.log(result);
+                                    return res
+                                        .status(201)
+                                        .json(util.successTrue(result));
+                                } else {
+                                    return res.sendStatus(204);
+                                }
+                            }
+                        );
+                    }
+                );
             });
         });
         console.log("솔트:" + signsalt);
-
-        console.log(req.body);
-
-        // let q1 = "select userEmail from user where userName=" + userEmail;
-
-        con.query(
-            "select userEmail from user where userEmail=?",
-            [userEmail],
-            (err, result, fields) => {
-                if (result && result.length != 0) {
-                    return res
-                        .status(400)
-                        .json(
-                            util.successFalse(null, "이미있는 아이디입니다.")
-                        );
-                }
-                con.query(
-                    "insert into user values('0',?,?,?,?,?)",
-                    [userEmail, userName, signPw, signsalt, signImgname],
-                    (err, result, fields) => {
-                        if (err) {
-                            return res
-                                .status(400)
-                                .json(util.successFalse(err, "입력 실패"));
-                        }
-
-                        if (result && result.length != 0) {
-                            console.log(result);
-                            return res
-                                .status(201)
-                                .json(util.successTrue(result));
-                        } else {
-                            return res.sendStatus(204);
-                        }
-                    }
-                );
-            }
-        );
     }
 );
 
