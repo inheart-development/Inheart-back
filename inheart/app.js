@@ -23,6 +23,7 @@ const admin_faqRouter = require("./routes/admin/faq");
 const admin_serveyRouter = require("./routes/admin/servey");
 const admin_statisRouter = require("./routes/admin/statis");
 const admin_userRouter = require("./routes/admin/user");
+const adminRouter = require("./routes/admin/admin");
 const passportConfig = require("./passport/passport");
 
 //---------------------router------------------------
@@ -102,7 +103,8 @@ app.use("/admin/contents", admin_contentsRouter);
 app.use("/admin/faq", admin_faqRouter);
 app.use("/admin/servey", admin_serveyRouter);
 app.use("/admin/user", admin_userRouter);
-app.use("/")
+app.use("/admin", adminRouter);
+//app.use("/")
 //---------------------router------------------------
 
 app.use((req, res, next) => {
