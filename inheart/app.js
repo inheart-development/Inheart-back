@@ -74,7 +74,7 @@ app.use(function(req, res, next) {
     );
     res.header(
         "Access-Control-Allow-Headers",
-        "Origin, Content-Type, X-Auth-Token"
+        "Origin, Content-Type, X-Auth-Token,Authorization"
     );
     //res.header("Access-Control-Allow-Headers", "content-type");
     res.header("X-Content-Type-Options", "nosniff");
