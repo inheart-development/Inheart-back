@@ -48,9 +48,15 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
                 console.error(loginError);
                 return next(loginError);
             }
+            
+            let explicitUserData = user;
+            delete explicitUserData.userNo;
+            delete explicitUserData.userPw;
+            delete explicitUserData.userSalt;
+            delete explicitUserData.token;
 
             //리다이렉트를 하면안됨
-            return res.json(util.successTrue(user));
+            return res.json(util.successTrue(explicitUserData));
         });
     })(req, res, next);
 });

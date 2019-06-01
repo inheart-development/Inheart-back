@@ -25,6 +25,12 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
                 return next(loginError);
             }
 
+            let explicitAdminData = admin;
+            delete explicitAdminData.adminNo;
+            delete explicitAdminData.adminPassword;
+            delete explicitAdminData.adminSalt;
+            delete explicitAdminData.token;
+
             //리다이렉트를 하면안됨
             return res.json(util.successTrue(admin));
         });
