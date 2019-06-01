@@ -20,7 +20,7 @@ const surveyRouter = require("./routes/user/survey");
 const userRouter = require("./routes/user/user");
 const admin_contentsRouter = require("./routes/admin/contents");
 const admin_faqRouter = require("./routes/admin/faq");
-const admin_serveyRouter = require("./routes/admin/servey");
+const admin_serveyRouter = require("./routes/admin/survey");
 const admin_statisRouter = require("./routes/admin/statis");
 const admin_userRouter = require("./routes/admin/user");
 const adminRouter = require("./routes/admin/admin");
@@ -63,7 +63,7 @@ app.use(passport.session()); //express-session에서 생성하는 것이므로 e
 // });
 
 //미들웨어 설정
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
     res.header("Access-Control-Allow-Headers", "content-type, Authorization");
@@ -101,7 +101,7 @@ app.use("/user", userRouter);
 app.use("/admin/statis", admin_statisRouter);
 app.use("/admin/contents", admin_contentsRouter);
 app.use("/admin/faq", admin_faqRouter);
-app.use("/admin/servey", admin_serveyRouter);
+app.use("/admin/survey", admin_serveyRouter);
 app.use("/admin/user", admin_userRouter);
 app.use("/admin", adminRouter);
 //app.use("/")
