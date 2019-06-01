@@ -34,7 +34,7 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
     })(req, res, next);
 });
 
-router.options("/options", (req, res) => {
+router.options("/login", (req, res) => {
     res.sendStatus(200);
 });
 
