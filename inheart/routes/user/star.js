@@ -158,6 +158,14 @@ router.get("/", auth.authenticate(), (req, res, next) => {
     );
 });
 
+router.options("/list", (req, res) => {
+    res.sendStatus(200);
+});
+
+router.options("/", (req, res) => {
+    res.sendStatus(200);
+});
+
 router.all("/list", (req, res, next) => {
     return res
         .status(405)

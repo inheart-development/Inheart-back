@@ -5,10 +5,7 @@ const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
 const passport = require("passport");
-const {
-    isLoggedIn,
-    isNotLoggedIn
-} = require("../../check/check");
+const { isLoggedIn, isNotLoggedIn } = require("../../check/check");
 const auth = require("./auth")();
 
 const util = require("../../check/util");
@@ -24,8 +21,8 @@ var upload = multer({
             cb(
                 null,
                 path.basename(file.originalname, ext) +
-                new Date().valueOf() +
-                ext
+                    new Date().valueOf() +
+                    ext
             ); //파일이름+업로드날짜+확장자
         }
     })
@@ -39,7 +36,7 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
         }
         if (!user) {
             req.flash("loginError", info.message);
-            return res.status(400).json(util.successFalse(null, info.message));
+            return res.status(204).json(util.successFalse(null, info.message));
         }
         console.log("성공");
         console.log(user);
@@ -48,7 +45,7 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
                 console.error(loginError);
                 return next(loginError);
             }
-            
+
             let explicitUserData = user;
             delete explicitUserData.userNo;
             delete explicitUserData.userPw;
@@ -82,22 +79,19 @@ router.post(
     (req, res, next) => {
         // console.log("이미지파일:" + req.file);
         res.header("Access-Control-Allow-Headers", "multipart/form-data");
-        const {
-            userEmail,
-            userName,
-            userPw
-        } = req.body;
+        const { userEmail, userName, userPw } = req.body;
         console.log(req.body);
 
         const signImgname = req.file.filename; //이미지이름
         let signPw = undefined;
         let signsalt = undefined;
 
-        crypto.randomBytes(64, (err, buf) => { //pw단방향 암호화
-            signsalt = buf.toString('base64');
+        crypto.randomBytes(64, (err, buf) => {
+            //pw단방향 암호화
+            signsalt = buf.toString("base64");
             console.log("salt: " + signsalt);
-            crypto.pbkdf2(userPw, signsalt, 12653, 64, 'sha512', (err, key) => {
-                signPw = key.toString('base64');
+            crypto.pbkdf2(userPw, signsalt, 12653, 64, "sha512", (err, key) => {
+                signPw = key.toString("base64");
                 console.log("signPw: " + signPw);
                 // let q1 = "select userEmail from user where userName=" + userEmail;
                 con.query(
@@ -108,19 +102,30 @@ router.post(
                             return res
                                 .status(400)
                                 .json(
-                                    util.successFalse(null, "이미있는 아이디입니다.")
+                                    util.successFalse(
+                                        null,
+                                        "이미있는 아이디입니다."
+                                    )
                                 );
                         }
                         con.query(
                             "insert into user values('0',?,?,?,?,?)",
-                            [userEmail, userName, signPw, signImgname, signsalt],
+                            [
+                                userEmail,
+                                userName,
+                                signPw,
+                                signImgname,
+                                signsalt
+                            ],
                             (err, result, fields) => {
                                 if (err) {
                                     return res
                                         .status(400)
-                                        .json(util.successFalse(err, "입력 실패"));
+                                        .json(
+                                            util.successFalse(err, "입력 실패")
+                                        );
                                 }
-        
+
                                 if (result && result.length != 0) {
                                     console.log(result);
                                     return res
@@ -229,6 +234,26 @@ router.get("/meditotal", auth.authenticate(), (req, res, next) => {
             );
         }
     );
+});
+
+router.options("/login", (req, res) => {
+    res.sendStatus(200);
+});
+
+router.options("/logout", (req, res) => {
+    res.sendStatus(200);
+});
+
+router.options("/signup", (req, res) => {
+    res.sendStatus(200);
+});
+
+router.options("/exit", (req, res) => {
+    res.sendStatus(200);
+});
+
+router.options("/meditotal", (req, res) => {
+    res.sendStatus(200);
 });
 
 router.all("/login", (req, res, next) => {

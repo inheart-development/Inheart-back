@@ -165,6 +165,22 @@ router.get("/list", auth.authenticate(), (req, res, next) => {
     );
 });
 
+router.options("/star/list", (req, res) => {
+    res.sendStatus(200);
+});
+
+router.options("/category/list", (req, res) => {
+    res.sendStatus(200);
+});
+
+router.options("/", (req, res) => {
+    res.sendStatus(200);
+});
+
+router.options("/list", (req, res) => {
+    res.sendStatus(200);
+});
+
 router.all("star/list", (req, res, next) => {
     return res
         .status(405)

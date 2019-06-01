@@ -124,6 +124,14 @@ router.delete("/", (req, res, next) => {
     );
 });
 
+router.options("/", (req, res) => {
+    res.sendStatus(200);
+});
+
+router.options("/list", (req, res) => {
+    res.sendStatus(200);
+});
+
 router.all("/", (req, res, next) => {
     return res
         .status(405)

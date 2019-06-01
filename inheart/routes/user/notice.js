@@ -124,6 +124,18 @@ router.post("/on-off", auth.authenticate(), (req, res, next) => {
     return;
 });
 
+router.options("/list", (req, res) => {
+    res.sendStatus(200);
+});
+
+router.options("/", (req, res) => {
+    res.sendStatus(200);
+});
+
+router.options("/on-off", (req, res) => {
+    res.sendStatus(200);
+});
+
 router.all("/list", auth.authenticate(), (req, res, next) => {
     return res
         .status(405)

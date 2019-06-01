@@ -211,6 +211,18 @@ router.post(
     }
 );
 
+router.options("/", (req, res) => {
+    res.sendStatus(200);
+});
+
+router.options("/list", (req, res) => {
+    res.sendStatus(200);
+});
+
+router.options("/type/list", (req, res) => {
+    res.sendStatus(200);
+});
+
 router.all("/", (req, res, next) => {
     return res
         .status(405)
@@ -224,12 +236,6 @@ router.all("/list", (req, res, next) => {
 });
 
 router.all("/type/list", (req, res, next) => {
-    return res
-        .status(405)
-        .json(util.successFalse(null, "요청 메서드를 확인하세요"));
-});
-
-router.all("/", (req, res, next) => {
     return res
         .status(405)
         .json(util.successFalse(null, "요청 메서드를 확인하세요"));

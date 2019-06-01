@@ -12,7 +12,7 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
         }
         if (!admin) {
             req.flash("loginError", info.message);
-            return res.status(400).json(util.successFalse(null, info.message));
+            return res.status(204).json(util.successFalse(null, info.message));
         }
         console.log("성공");
         console.log(admin);
@@ -34,20 +34,24 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
     })(req, res, next);
 });
 
-router.options("/login", (req, res) => {
-    res.sendStatus(200);
-});
-
 router.get("/logout", isLoggedIn, (req, res) => {
     req.logout();
     req.session.destroy();
     res.status(200).json(util.successTrue("로그아웃 성공"));
 });
 
+router.options("/login", (req, res) => {
+    res.sendStatus(200);
+});
+
 router.all("/login", (req, res, next) => {
     return res
         .status(405)
         .json(util.successFalse(null, "요청 메서드를 확인하세요"));
+});
+
+router.options("/logout", (req, res) => {
+    res.sendStatus(200);
 });
 
 router.all("/logout", (req, res, next) => {

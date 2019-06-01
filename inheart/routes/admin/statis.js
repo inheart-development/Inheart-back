@@ -43,6 +43,14 @@ router.get("/allDay", (req, res, next) => {
     });
 });
 
+router.options("/day", (req, res) => {
+    res.sendStatus(200);
+});
+
+router.options("/allday", (req, res) => {
+    res.sendStatus(200);
+});
+
 router.all("/day", (req, res, next) => {
     return res
         .status(405)
