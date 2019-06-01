@@ -30,7 +30,7 @@ const passportAdminConfig = require("./passport/passport_admin");
 //---------------------router------------------------
 
 const app = express();
-passportUserConfig(); 
+passportUserConfig();
 passportAdminConfig();
 //passport 내부의 코드를 실행하기 위해
 app.set("port", process.env.PORT || 3000);
@@ -67,15 +67,19 @@ app.use(passport.session()); //express-session에서 생성하는 것이므로 e
 
 //미들웨어 설정
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-    res.header("Access-Control-Allow-Headers", "content-type, Authorization");
+    res.header("Access-Control-Allow-Origin: *");
+    res.header(
+        "Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS"
+    );
+    res.header(
+        "Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token"
+    );
     //res.header("Access-Control-Allow-Headers", "content-type");
     res.header("X-Content-Type-Options", "nosniff");
     res.header("X-Frame-Options", "deny");
     res.header("Content-Security-Policy", "default-src 'none'");
     res.removeHeader("x-Powered-By");
-    res.header("Content-Type", "application/json");
+    //res.header("Content-Type", "application/json");
 
     next();
 });
