@@ -67,12 +67,14 @@ app.use(passport.session()); //express-session에서 생성하는 것이므로 e
 
 //미들웨어 설정
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin: *");
+    res.header("Access-Control-Allow-Origin", "*");
     res.header(
-        "Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS"
+        "Access-Control-Allow-Methods",
+        "GET, POST, PATCH, PUT, DELETE, OPTIONS"
     );
     res.header(
-        "Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token"
+        "Access-Control-Allow-Headers",
+        "Origin, Content-Type, X-Auth-Token"
     );
     //res.header("Access-Control-Allow-Headers", "content-type");
     res.header("X-Content-Type-Options", "nosniff");
