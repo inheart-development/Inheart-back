@@ -1,9 +1,6 @@
 const router = require("express").Router();
 const passport = require("passport"); //TODO: passport 수정 또는 새로운 passport 추가 필요
-const {
-    isLoggedIn,
-    isNotLoggedIn
-} = require("../../check/check");
+const { isLoggedIn, isNotLoggedIn } = require("../../check/check");
 
 const util = require("../../check/util");
 
@@ -35,6 +32,10 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
             return res.json(util.successTrue(admin));
         });
     })(req, res, next);
+});
+
+router.options("/options", (req, res) => {
+    res.sendStatus(200);
 });
 
 router.get("/logout", isLoggedIn, (req, res) => {
