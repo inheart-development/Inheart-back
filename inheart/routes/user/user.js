@@ -50,7 +50,7 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
             delete explicitUserData.userNo;
             delete explicitUserData.userPw;
             delete explicitUserData.userSalt;
-            delete explicitUserData.token;
+            //delete explicitUserData.token;
 
             //리다이렉트를 하면안됨
             return res.json(util.successTrue(explicitUserData));
