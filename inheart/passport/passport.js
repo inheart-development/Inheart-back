@@ -23,6 +23,7 @@ module.exports = () => {
     });
 
     passport.use(
+        "user",
         new LocalStrategy({
                 usernameField: "userEmail",
                 passwordField: "userPw",
@@ -30,53 +31,57 @@ module.exports = () => {
                 passReqToCallback: false
             },
             (userEmail, userPw, done) => {
-                let loginsalt = 0;
-                let loginPw = 0;
-                con.query("select salt from user where userEmail=?", [userEmail], (err, result, fields) => {
-                    loginsalt = result;
+
+                con.query("select userSalt from user where userEmail=?", [userEmail], (err, result, fields) => {
+
+                    const loginsalt = result[0] !== undefined? result[0].userSalt : "0";
+                    //const loginsalt = result[0].userSalt;
+                    console.log("loginSalt:", loginsalt);
+
+                    crypto.pbkdf2(userPw, loginsalt, 12653, 64, 'sha512', (err, key) => {
+                        const loginPw = key.toString('base64');
+                        console.log("loginPw:", loginPw);
+
+                        con.query(
+                            "select * from user where userEmail=? and userPw=?",
+                            [userEmail, loginPw],
+                            (err, result, fields) => {
+                                if (err) return done(err);
+                                else if (result == "") {
+                                    console.log("아이디 또는 비밀번호가 틀렸습니다."); //출력 테스트 완료!
+                                    done(null, false, {
+                                        message: "가입되지 않은 회원입니다."
+                                    });
+                                } else {
+                                    let getUserNo = result[0].userNo;
+                                    let q2 =
+                                        "insert into conlog values('0','" +
+                                        getUserNo +
+                                        "','" +
+                                        new Date().toFormat("YYYY-MM-DD HH24:MI:SS") +
+                                        "');";
+        
+                                    con.query(q2, (err, result, fields) => {}); //로그 찍히는거 테스트 완료!
+        
+                                    // console.log(result[0].userNo); //출력 테스트 완료!
+        
+                                    let payload = {
+                                        userNo: getUserNo
+                                    };
+                                    let token = jwt.encode(payload, cfg.jwtSecret);
+        
+                                    //token: token
+                                    let data = result[0];
+                                    data.token = token;
+        
+                                    return done(null, data);
+                                }
+                            }
+                        );
+                    });
                 });
-
-                crypto.pbkdf2(userPw, loginsalt, 12653, 64, 'sha512', (err, key) => {
-                    loginPw = key.toString('base64');
-                });
-
-                con.query(
-                    "select * from user where userEmail=? and userPw=?",
-                    [userEmail, loginPw],
-                    (err, result, fields) => {
-                        if (err) return done(err);
-                        else if (result == "") {
-                            console.log("아이디 또는 비밀번호가 틀렸습니다."); //출력 테스트 완료!
-                            done(null, false, {
-                                message: "가입되지 않은 회원입니다."
-                            });
-                        } else {
-                            let getUserNo = result[0].userNo;
-                            let q2 =
-                                "insert into conlog values('0','" +
-                                getUserNo +
-                                "','" +
-                                new Date().toFormat("YYYY-MM-DD HH24:MI:SS") +
-                                "');";
-
-                            con.query(q2, (err, result, fields) => {}); //로그 찍히는거 테스트 완료!
-
-                            // console.log(result[0].userNo); //출력 테스트 완료!
-
-                            let payload = {
-                                userNo: getUserNo
-                            };
-                            let token = jwt.encode(payload, cfg.jwtSecret);
-
-                            //token: token
-                            let data = result[0];
-                            data.token = token;
-
-                            return done(null, data);
-                        }
-                    }
-                );
             }
         )
     );
+
 };
