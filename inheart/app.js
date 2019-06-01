@@ -24,12 +24,15 @@ const admin_serveyRouter = require("./routes/admin/survey");
 const admin_statisRouter = require("./routes/admin/statis");
 const admin_userRouter = require("./routes/admin/user");
 const adminRouter = require("./routes/admin/admin");
-const passportConfig = require("./passport/passport");
+const passportUserConfig = require("./passport/passport_user");
+const passportAdminConfig = require("./passport/passport_admin");
 
 //---------------------router------------------------
 
 const app = express();
-passportConfig(); //passport 내부의 코드를 실행하기 위해
+passportUserConfig(); 
+passportAdminConfig();
+//passport 내부의 코드를 실행하기 위해
 app.set("port", process.env.PORT || 3000);
 
 app.use(morgan("dev"));

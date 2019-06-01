@@ -8,7 +8,7 @@ const {
 const util = require("../../check/util");
 
 router.post("/login", isNotLoggedIn, (req, res, next) => {
-    passport.authenticate("local", (authError, admin, info) => {
+    passport.authenticate("admin", (authError, admin, info) => {
         if (authError) {
             console.error(authError);
             return next(authError);
