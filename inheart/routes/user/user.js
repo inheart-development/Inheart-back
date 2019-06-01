@@ -32,7 +32,7 @@ var upload = multer({
 });
 
 router.post("/login", isNotLoggedIn, (req, res, next) => {
-    passport.authenticate("local", (authError, user, info) => {
+    passport.authenticate("user", (authError, user, info) => {
         if (authError) {
             console.error(authError);
             return next(authError);
@@ -129,7 +129,6 @@ router.post(
                 );
             });
         });
-        console.log("솔트:" + signsalt);
     }
 );
 
