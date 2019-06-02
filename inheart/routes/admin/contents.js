@@ -209,7 +209,7 @@ router.put("/", upload.single("contents"), (req, res, next) => {
 
     //console.log(req.body);
 
-    const contentsFile = req.file.filename;
+    const contentsFile = req.file.filename.normalize('NFC');
 
     audioDuration
         .getAudioDurationInSeconds("sound/" + req.file.filename)
