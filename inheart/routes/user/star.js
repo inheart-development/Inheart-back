@@ -60,7 +60,7 @@ router.post("/", auth.authenticate(), (req, res, next) => {
             );
 
     con.query(
-        "insert into star (starNo,userNo,contentsNo) values('0','?','?')",
+        "insert into star (starNo,userNo,contentsNo) values('0',?,?)",
         [userNo, contentsNo],
         (err, result, fields) => {
             if (err) {
