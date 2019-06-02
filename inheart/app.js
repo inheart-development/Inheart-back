@@ -81,7 +81,7 @@ app.use(function(req, res, next) {
     res.header("X-Frame-Options", "deny");
     res.header("Content-Security-Policy", "default-src 'none'");
     res.removeHeader("x-Powered-By");
-    //res.header("Content-Type", "application/json");
+    res.header("Content-Type", "application/json; charset=utf-8");
 
     next();
 });

@@ -117,7 +117,6 @@ router.post("/", upload.single("contents"), (req, res, next) => {
 
     const contentsFile = req.file.filename;
     console.log(req.file);
-    console.log(typeof(req.file.filename));
 
     switch (contentsType) {
         case "sound":
