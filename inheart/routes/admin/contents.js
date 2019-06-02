@@ -82,9 +82,9 @@ router.get("/category/list", (req, res, next) => {
         }
     );
 });
-
 router.get("/", (req, res, next) => {
     const { contentsNo } = req.query;
+
     con.query(
         "select * from contents where contentsNo = ?;",
         [contentsNo],
@@ -100,7 +100,7 @@ router.get("/", (req, res, next) => {
                 //result 결과값이 있으면
 
                 console.log(result);
-                return res.status(200).status(util.successTrue(result[0]));
+                return res.status(200).json(util.successTrue(result));
             } else {
                 return res.sendStatus(204);
             }
