@@ -125,9 +125,7 @@ router.post("/", upload.single("contents"), (req, res, next) => {
     if (contentsType === "sound") {
         console.log("type is sound");
         audioDuration
-            .getAudioDurationInSeconds(
-                "meditation/sound/" + req.file.contentsFile
-            )
+            .getAudioDurationInSeconds("meditation/sound/" + contentsFile)
             .then(duration => {
                 contentsTime = timeFormat.fromS(
                     Math.ceil(duration),
