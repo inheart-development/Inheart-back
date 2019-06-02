@@ -13,7 +13,17 @@ var upload = multer({
     storage: multer.diskStorage({
         //서버 디스크에 저장
         destination(req, file, cb) {
-            cb(null, "meditation/"); //파일 저장 경로
+            //console.log("multer req: ", req);
+            const fileType = req.body.contentsType;
+            //console.log(type);
+            switch(fileType){
+                case "sound":
+                    cb(null, "meditation/sound"); //파일 저장 경로
+                    break;
+                case "text":
+                    cb(null, "meditation/text"); //파일 저장 경로
+                    break;
+            }
         },
         filename(req, file, cb) {
             const ext = path.extname(file.originalname); //파일의 확장자를 ext에 저장
