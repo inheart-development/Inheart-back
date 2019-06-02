@@ -47,11 +47,11 @@ router.get("/", (req, res, next) => {
 });
 
 router.post("/", (req, res, next) => {
-    const { faqF, faqQ } = req.body;
+    const { faqQuestion, faqAnswer } = req.body;
 
     con.query(
         "insert into faq values('0',?,?);",
-        [faqF, faqQ],
+        [faqQuestion, faqAnswer],
         (err, result, fields) => {
             if (err) {
                 //에러체크
@@ -73,11 +73,11 @@ router.post("/", (req, res, next) => {
 });
 
 router.put("/", (req, res, next) => {
-    const { faqF, faqQ, faqNo } = req.body;
+    const { faqQuestion, faqAnswer, faqNo } = req.body;
 
     con.query(
-        "update faq set faqF = ?, faqQ = ? where faqNo = ?;",
-        [faqF, faqQ, faqNo],
+        "update faq set faqQuestion = ?, faqAnswer = ? where faqNo = ?;",
+        [faqQuestion, faqAnswer, faqNo],
         (err, result, fields) => {
             if (err) {
                 //에러체크
