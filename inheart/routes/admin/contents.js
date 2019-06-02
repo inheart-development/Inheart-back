@@ -1,7 +1,6 @@
 const router = require("express").Router();
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs");
 const audioDuration = require("get-audio-duration");
 const timeFormat = require("hh-mm-ss");
 //const moment = require("moment");
@@ -16,13 +15,12 @@ var upload = multer({
             //console.log("multer req: ", req);
             const fileType = req.body.contentsType;
             //console.log(type);
-            switch(fileType){
-                case "sound":
-                    cb(null, "meditation/sound"); //파일 저장 경로
-                    break;
-                case "text":
-                    cb(null, "meditation/text"); //파일 저장 경로
-                    break;
+            if (fileType === "sound") {
+                cb(null, "meditation/sound");
+            } else if (fileType === "text") {
+                cb(null, "meditation/text");
+            } else {
+                console.log("multer error: undefined contents type used");
             }
         },
         filename(req, file, cb) {
@@ -30,8 +28,8 @@ var upload = multer({
             cb(
                 null,
                 path.basename(file.originalname, ext) +
-                new Date().valueOf() +
-                ext
+                    new Date().valueOf() +
+                    ext
             ); //파일이름+업로드날짜+확장자
         }
     })
@@ -61,9 +59,7 @@ router.get("/list", (req, res, next) => {
 });
 
 router.get("/category/list", (req, res, next) => {
-    const {
-        categoryNo
-    } = req.query;
+    const { categoryNo } = req.query;
     con.query(
         "select * from contents where categoryNo = 1 order by contentsIndex;",
         [categoryNo],
@@ -88,9 +84,7 @@ router.get("/category/list", (req, res, next) => {
 });
 
 router.get("/", (req, res, next) => {
-    const {
-        contentsNo
-    } = req.query;
+    const { contentsNo } = req.query;
 
     con.query(
         "select * from contents where contentsNo = ?;",
@@ -125,82 +119,93 @@ router.post("/", upload.single("contents"), (req, res, next) => {
         contentsType
     } = req.body;
 
-    const contentsFile = req.file.filename.normalize('NFC');
+    const contentsFile = req.file.filename.normalize("NFC");
+    var contentsTime = "00:00:00";
     console.log(req.file);
 
-    switch (contentsType) {
-        case "sound":
-            console.log("type is sound");
-            audioDuration
-                .getAudioDurationInSeconds("sound/" + req.file.filename)
-                .then(duration => {
-                    contentsTime = timeFormat.fromS(
-                        Math.ceil(duration),
-                        "hh:mm:ss"
-                    );
+    if (contentsType === "sound") {
+        console.log("type is sound");
+        audioDuration
+            .getAudioDurationInSeconds("meditation/sound/" + req.file.filename)
+            .then(duration => {
+                contentsTime = timeFormat.fromS(
+                    Math.ceil(duration),
+                    "hh:mm:ss"
+                );
 
-                    con.query(
-                        "insert into contents values('0',?,?,?,?,?,?,'1');",
-                        [
-                            categoryNo,
-                            contentsTitle,
-                            contentsExplain,
-                            contentsTime,
-                            contentsFile,
-                            contentsType
-                        ],
-                        (err, result, fields) => {
-                            if (err) {
-                                //에러체크
-                                return res
-                                    .status(400)
-                                    .json(util.successFalse(err, "업데이트 실패"));
-                            }
-
-                            if (result && result.length != 0) {
-                                //result 결과값이 있으면
-
-                                console.log(result);
-                                return res.status(200).json(util.successTrue(result));
-                            } else {
-                                return res.sendStatus(204);
-                            }
+                con.query(
+                    "insert into contents values('0',?,?,?,?,?,?,'1');",
+                    [
+                        categoryNo,
+                        contentsTitle,
+                        contentsExplain,
+                        contentsTime,
+                        contentsFile,
+                        contentsType
+                    ],
+                    (err, result, fields) => {
+                        if (err) {
+                            //에러체크
+                            return res
+                                .status(400)
+                                .json(util.successFalse(err, "업데이트 실패"));
                         }
-                    );
-                });
-            break;
-        case "text":
-            console.log("type is text");
-            const contentsTime = "00:00:00";
-            con.query(
-                "insert into contents values('0',?,?,?,?,?,?,'1');",
-                [
-                    categoryNo,
-                    contentsTitle,
-                    contentsExplain,
-                    contentsTime,
-                    contentsFile,
-                    contentsType
-                ],
-                (err, result, fields) => {
-                    if (err) {
-                        //에러체크
-                        return res
-                            .status(400)
-                            .json(util.successFalse(err, "업데이트 실패"));
-                    }
 
-                    if (result && result.length != 0) {
-                        //result 결과값이 있으면
+                        if (result && result.length != 0) {
+                            //result 결과값이 있으면
 
-                        console.log(result);
-                        return res.status(200).json(util.successTrue(result));
-                    } else {
-                        return res.sendStatus(204);
+                            console.log(result);
+                            return res
+                                .status(200)
+                                .json(util.successTrue(result));
+                        } else {
+                            return res.sendStatus(204);
+                        }
                     }
+                );
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    } else if (contentsType === "text") {
+        console.log("type is text");
+        con.query(
+            "insert into contents values('0',?,?,?,?,?,?,'1');",
+            [
+                categoryNo,
+                contentsTitle,
+                contentsExplain,
+                contentsTime,
+                contentsFile,
+                contentsType
+            ],
+            (err, result, fields) => {
+                if (err) {
+                    //에러체크
+                    return res
+                        .status(400)
+                        .json(util.successFalse(err, "업데이트 실패"));
                 }
+
+                if (result && result.length != 0) {
+                    //result 결과값이 있으면
+
+                    console.log(result);
+                    return res.status(200).json(util.successTrue(result));
+                } else {
+                    return res.sendStatus(204);
+                }
+            }
+        );
+    } else {
+        return res
+            .status(400)
+            .json(
+                util.successFalse(
+                    err,
+                    "지정되지 않은 콘텐츠 타입을 사용했습니다"
+                )
             );
-            break;
     }
     //console.log(req.file);
     //const contentsTime = "00:12:23"; //파일을 받아서 시간 확인 필요
@@ -217,54 +222,102 @@ router.put("/", upload.single("contents"), (req, res, next) => {
         contentsNo
     } = req.body;
 
-    //console.log(req.body);
+    const contentsFile = req.file.filename.normalize("NFC");
+    var contentsTime = "00:00:00";
+    console.log(req.file);
 
-    const contentsFile = req.file.filename.normalize('NFC');
+    if (contentsType === "sound") {
+        console.log("type is sound");
+        audioDuration
+            .getAudioDurationInSeconds("meditation/sound/" + req.file.filename)
+            .then(duration => {
+                contentsTime = timeFormat.fromS(
+                    Math.ceil(duration),
+                    "hh:mm:ss"
+                );
 
-    audioDuration
-        .getAudioDurationInSeconds("sound/" + req.file.filename)
-        .then(duration => {
-            const contentsTime = timeFormat.fromS(
-                Math.ceil(duration),
-                "hh:mm:ss"
-            );
+                con.query(
+                    "update contents set categoryNo = ?,contentsTitle = ?,contentsExplan = ?,contentsTime = ?,contentsFile = ?,contentsType = ? where contentsNo = ?;",
+                    [
+                        categoryNo,
+                        contentsTitle,
+                        contentsExplain,
+                        contentsTime,
+                        contentsFile,
+                        contentsType,
+                        contentsNo
+                    ],
+                    (err, result, fields) => {
+                        if (err) {
+                            //에러체크
+                            return res
+                                .status(400)
+                                .json(util.successFalse(err, "업데이트 실패"));
+                        }
 
-            con.query(
-                "update contents set categoryNo = ?,contentsTitle = ?,contentsExplan = ?,contentsTime = ?,contentsFile = ?,contentsType = ? where contentsNo = ?;",
-                [
-                    categoryNo,
-                    contentsTitle,
-                    contentsExplain,
-                    contentsTime,
-                    contentsFile,
-                    contentsType,
-                    contentsNo
-                ],
-                (err, result, fields) => {
-                    if (err) {
-                        //에러체크
-                        return res
-                            .status(400)
-                            .json(util.successFalse(err, "업데이트 실패"));
+                        if (result && result.length != 0) {
+                            //result 결과값이 있으면
+
+                            console.log(result);
+                            return res
+                                .status(200)
+                                .json(util.successTrue(result));
+                        } else {
+                            return res.sendStatus(204);
+                        }
                     }
-
-                    if (result && result.length != 0) {
-                        //result 결과값이 있으면
-
-                        console.log(result);
-                        return res.status(200).json(util.successTrue(result));
-                    } else {
-                        return res.sendStatus(204);
-                    }
+                );
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    } else if (contentsType === "text") {
+        console.log("type is text");
+        con.query(
+            "update contents set categoryNo = ?,contentsTitle = ?,contentsExplan = ?,contentsTime = ?,contentsFile = ?,contentsType = ? where contentsNo = ?;",
+            [
+                categoryNo,
+                contentsTitle,
+                contentsExplain,
+                contentsTime,
+                contentsFile,
+                contentsType,
+                contentsNo
+            ],
+            (err, result, fields) => {
+                if (err) {
+                    //에러체크
+                    return res
+                        .status(400)
+                        .json(util.successFalse(err, "업데이트 실패"));
                 }
+
+                if (result && result.length != 0) {
+                    //result 결과값이 있으면
+
+                    console.log(result);
+                    return res.status(200).json(util.successTrue(result));
+                } else {
+                    return res.sendStatus(204);
+                }
+            }
+        );
+    } else {
+        return res
+            .status(400)
+            .json(
+                util.successFalse(
+                    err,
+                    "지정되지 않은 콘텐츠 타입을 사용했습니다"
+                )
             );
-        });
+    }
+    //console.log(req.file);
+    //const contentsTime = "00:12:23"; //파일을 받아서 시간 확인 필요
 });
 
 router.delete("/", (req, res, next) => {
-    const {
-        contentsNo
-    } = req.body;
+    const { contentsNo } = req.body;
 
     con.query(
         "delete from contents where contentsNo = ?;",
