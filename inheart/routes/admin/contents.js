@@ -115,7 +115,7 @@ router.post("/", upload.single("contents"), (req, res, next) => {
         contentsType
     } = req.body;
 
-    const contentsFile = req.file.filename;
+    const contentsFile = req.file.filename.normalize('NFC');
     console.log(req.file);
 
     switch (contentsType) {
