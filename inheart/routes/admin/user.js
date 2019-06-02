@@ -65,7 +65,10 @@ router.get("/meditotal", (req, res, next) => {
                         result2[0].categoryNo_2 = result[1].count;
                         result2[0].categoryNo_3 = result[2].count;
                         result2[0].categoryNo_4 = result[3].count;
-                        return res.status(200).json(util.successTrue(result2));
+
+                        return res
+                            .status(200)
+                            .json(util.successTrue(result2[0]));
                     } else {
                         return res.sendStatus(204);
                     }
