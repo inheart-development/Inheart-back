@@ -101,7 +101,7 @@ router.get("/", (req, res, next) => {
                 //result 결과값이 있으면
 
                 console.log(result);
-                return res.status(200).json(util.successTrue(result));
+                return res.status(200).json(util.successTrue(result[0]));
             } else {
                 return res.sendStatus(204);
             }
