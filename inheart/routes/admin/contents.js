@@ -85,7 +85,6 @@ router.get("/category/list", (req, res, next) => {
 
 router.get("/", (req, res, next) => {
     const { contentsNo } = req.query;
-
     con.query(
         "select * from contents where contentsNo = ?;",
         [contentsNo],
@@ -101,7 +100,7 @@ router.get("/", (req, res, next) => {
                 //result 결과값이 있으면
 
                 console.log(result);
-                return res.status(200).json(util.successTrue(result[0]));
+                return res.status(200).status(util.successTrue(result[0]));
             } else {
                 return res.sendStatus(204);
             }
@@ -126,7 +125,9 @@ router.post("/", upload.single("contents"), (req, res, next) => {
     if (contentsType === "sound") {
         console.log("type is sound");
         audioDuration
-            .getAudioDurationInSeconds("meditation/sound/" + req.file.filename)
+            .getAudioDurationInSeconds(
+                "meditation/sound/" + req.file.contentsFile
+            )
             .then(duration => {
                 contentsTime = timeFormat.fromS(
                     Math.ceil(duration),
@@ -222,98 +223,174 @@ router.put("/", upload.single("contents"), (req, res, next) => {
         contentsNo
     } = req.body;
 
-    const contentsFile = req.file.filename.normalize("NFC");
-    var contentsTime = "00:00:00";
     console.log(req.file);
 
-    if (contentsType === "sound") {
-        console.log("type is sound");
-        audioDuration
-            .getAudioDurationInSeconds("meditation/sound/" + req.file.filename)
-            .then(duration => {
-                contentsTime = timeFormat.fromS(
-                    Math.ceil(duration),
-                    "hh:mm:ss"
-                );
-
-                con.query(
-                    "update contents set categoryNo = ?,contentsTitle = ?,contentsExplan = ?,contentsTime = ?,contentsFile = ?,contentsType = ? where contentsNo = ?;",
-                    [
-                        categoryNo,
-                        contentsTitle,
-                        contentsExplain,
-                        contentsTime,
-                        contentsFile,
-                        contentsType,
-                        contentsNo
-                    ],
-                    (err, result, fields) => {
-                        if (err) {
-                            //에러체크
-                            return res
-                                .status(400)
-                                .json(util.successFalse(err, "업데이트 실패"));
-                        }
-
-                        if (result && result.length != 0) {
-                            //result 결과값이 있으면
-
-                            console.log(result);
-                            return res
-                                .status(200)
-                                .json(util.successTrue(result));
-                        } else {
-                            return res.sendStatus(204);
-                        }
+    //파일 미변경 시를 위함 == 하드코딩
+    if (req.file == undefined) {
+        if (contentsType === "sound") {
+            con.query(
+                "update contents set categoryNo = ?,contentsTitle = ?,contentsExplain = ?,contentsType = ? where contentsNo = ?;",
+                [
+                    categoryNo,
+                    contentsTitle,
+                    contentsExplain,
+                    contentsType,
+                    contentsNo
+                ],
+                (err, result, fields) => {
+                    if (err) {
+                        //에러체크
+                        return res
+                            .status(400)
+                            .json(util.successFalse(err, "업데이트 실패"));
                     }
-                );
-            })
-            .catch(err => {
-                console.log(err);
-            });
-    } else if (contentsType === "text") {
-        console.log("type is text");
-        con.query(
-            "update contents set categoryNo = ?,contentsTitle = ?,contentsExplan = ?,contentsTime = ?,contentsFile = ?,contentsType = ? where contentsNo = ?;",
-            [
-                categoryNo,
-                contentsTitle,
-                contentsExplain,
-                contentsTime,
-                contentsFile,
-                contentsType,
-                contentsNo
-            ],
-            (err, result, fields) => {
-                if (err) {
-                    //에러체크
-                    return res
-                        .status(400)
-                        .json(util.successFalse(err, "업데이트 실패"));
-                }
 
-                if (result && result.length != 0) {
-                    //result 결과값이 있으면
+                    if (result && result.length != 0) {
+                        //result 결과값이 있으면
 
-                    console.log(result);
-                    return res.status(200).json(util.successTrue(result));
-                } else {
-                    return res.sendStatus(204);
+                        console.log(result);
+                        return res.status(200).json(util.successTrue(result));
+                    } else {
+                        return res.sendStatus(204);
+                    }
                 }
-            }
-        );
-    } else {
-        return res
-            .status(400)
-            .json(
-                util.successFalse(
-                    err,
-                    "지정되지 않은 콘텐츠 타입을 사용했습니다"
-                )
             );
+        } else if (contentsType === "text") {
+            console.log("type is text");
+            con.query(
+                "update contents set categoryNo = ?,contentsTitle = ?,contentsExplain = ?,contentsTime = ?,contentsType = ? where contentsNo = ?;",
+                [
+                    categoryNo,
+                    contentsTitle,
+                    contentsExplain,
+                    contentsTime,
+                    contentsType,
+                    contentsNo
+                ],
+                (err, result, fields) => {
+                    if (err) {
+                        //에러체크
+                        return res
+                            .status(400)
+                            .json(util.successFalse(err, "업데이트 실패"));
+                    }
+
+                    if (result && result.length != 0) {
+                        //result 결과값이 있으면
+
+                        console.log(result);
+                        return res.status(200).json(util.successTrue(result));
+                    } else {
+                        return res.sendStatus(204);
+                    }
+                }
+            );
+        } else {
+            return res
+                .status(400)
+                .json(
+                    util.successFalse(
+                        err,
+                        "지정되지 않은 콘텐츠 타입을 사용했습니다"
+                    )
+                );
+        }
+    } else {
+        const contentsFile = req.file.filename.normalize("NFC");
+        var contentsTime = "00:00:00";
+
+        if (contentsType === "sound") {
+            console.log("type is sound");
+            audioDuration
+                .getAudioDurationInSeconds(
+                    "meditation/sound/" + req.file.filename
+                )
+                .then(duration => {
+                    contentsTime = timeFormat.fromS(
+                        Math.ceil(duration),
+                        "hh:mm:ss"
+                    );
+
+                    con.query(
+                        "update contents set categoryNo = ?,contentsTitle = ?,contentsExplain = ?,contentsFile = ?,contentsType = ? where contentsNo = ?;",
+                        [
+                            categoryNo,
+                            contentsTitle,
+                            contentsExplain,
+                            contentsFile,
+                            contentsType,
+                            contentsNo
+                        ],
+                        (err, result, fields) => {
+                            if (err) {
+                                //에러체크
+                                return res
+                                    .status(400)
+                                    .json(
+                                        util.successFalse(err, "업데이트 실패")
+                                    );
+                            }
+
+                            if (result && result.length != 0) {
+                                //result 결과값이 있으면
+
+                                console.log(result);
+                                return res
+                                    .status(200)
+                                    .json(util.successTrue(result));
+                            } else {
+                                return res.sendStatus(204);
+                            }
+                        }
+                    );
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        } else if (contentsType === "text") {
+            console.log("type is text");
+            con.query(
+                "update contents set categoryNo = ?,contentsTitle = ?,contentsExplain = ?,contentsTime = ?,contentsFile = ?,contentsType = ? where contentsNo = ?;",
+                [
+                    categoryNo,
+                    contentsTitle,
+                    contentsExplain,
+                    contentsTime,
+                    contentsFile,
+                    contentsType,
+                    contentsNo
+                ],
+                (err, result, fields) => {
+                    if (err) {
+                        //에러체크
+                        return res
+                            .status(400)
+                            .json(util.successFalse(err, "업데이트 실패"));
+                    }
+
+                    if (result && result.length != 0) {
+                        //result 결과값이 있으면
+
+                        console.log(result);
+                        return res.status(200).json(util.successTrue(result));
+                    } else {
+                        return res.sendStatus(204);
+                    }
+                }
+            );
+        } else {
+            return res
+                .status(400)
+                .json(
+                    util.successFalse(
+                        err,
+                        "지정되지 않은 콘텐츠 타입을 사용했습니다"
+                    )
+                );
+        }
+        //console.log(req.file);
+        //const contentsTime = "00:12:23"; //파일을 받아서 시간 확인 필요
     }
-    //console.log(req.file);
-    //const contentsTime = "00:12:23"; //파일을 받아서 시간 확인 필요
 });
 
 router.delete("/", (req, res, next) => {
