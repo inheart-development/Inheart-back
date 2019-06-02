@@ -48,7 +48,7 @@ router.get("/meditotal", (req, res, next) => {
             result.pop();
 
             con.query(
-                "select userEmail, userName from user where userNo = ?",
+                "select userEmail, userName, userImage from user where userNo = ?",
                 [userNo],
                 (err2, result2, fields2) => {
                     if (err) {
@@ -60,12 +60,11 @@ router.get("/meditotal", (req, res, next) => {
 
                     console.log(result2);
 
-                    result2[0].categoryNo_1 = result[0].count;
-                    result2[0].categoryNo_2 = result[1].count;
-                    result2[0].categoryNo_3 = result[2].count;
-                    result2[0].categoryNo_4 = result[3].count;
-
-                    if (result && result.length != 0) {
+                    if (result2 && result2.length != 0) {
+                        result2[0].categoryNo_1 = result[0].count;
+                        result2[0].categoryNo_2 = result[1].count;
+                        result2[0].categoryNo_3 = result[2].count;
+                        result2[0].categoryNo_4 = result[3].count;
                         return res.status(200).json(util.successTrue(result2));
                     } else {
                         return res.sendStatus(204);
