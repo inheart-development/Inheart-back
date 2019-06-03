@@ -99,6 +99,7 @@ app.use(express.static(path.join(__dirname, "public/dist")));
 // app.use("/img", express.static("img"));
 app.use("/meditation", express.static(path.join(__dirname, "meditation")));
 app.use("/pImg", express.static(path.join(__dirname, "profileImage"))); //profileImage에 있는 사진들이 pImg 주소로 제공된다.
+app.use("/cImg", express.static(path.join(__dirname, "coverImage"))); //coverImage에 있는 사진들이 cImg 주소로 제공된다.
 //---------------------router------------------------
 
 app.use("/contents", contentsRouter);
