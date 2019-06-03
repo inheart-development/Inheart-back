@@ -134,11 +134,21 @@ router.get("/type/list", auth.authenticate(), (req, res, next) => {
         }
     );
 });
-
+//향후 수정 필요
 router.post("/", auth.authenticate(), (req, res, next) => {
-    const { contentsNo, feelText, feelTime, feelTypeNo, feelTitle } = req.body;
+    var { contentsNo, feelText, feelTime, feelTypeNo, feelTitle } = req.body;
 
     const userNo = req.user.userNo;
+
+    console.log(feelTime + "rrrrr\n");
+
+    if (contentsNo == undefined) {
+        contentsNo = 1;
+    }
+
+    if (feelTime == undefined) {
+        feelTime = "00:00:00";
+    }
 
     if (userNo === -1)
         return res
