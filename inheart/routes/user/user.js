@@ -119,6 +119,7 @@ router.post(
                             ],
                             (err, result, fields) => {
                                 if (err) {
+                                    console.log(err);
                                     return res
                                         .status(400)
                                         .json(
