@@ -43,6 +43,41 @@ router.get("/list", auth.authenticate(), (req, res, next) => {
     );
 });
 
+router.get("/list/all", auth.authenticate(), (req, res, next) => {
+    const userNo = req.user.userNo;
+    if (userNo === -1)
+        return res
+            .status(401)
+            .json(
+                util.successFalse(
+                    null,
+                    "토큰으로 부터 유저정보를 얻을 수 없습니다."
+                )
+            );
+
+    con.query(
+        "select c.* from contents c where c.contentsNo in (select s.contentsNo from star s where s.userNo =?) order by contentsIndex",
+        [userNo],
+        (err, result, fields) => {
+            if (err) {
+                //에러체크
+                return res
+                    .status(400)
+                    .json(util.successFalse(err, "검색 실패"));
+            }
+
+            if (result && result.length != 0) {
+                //result 결과값이 있으면
+
+                console.log(result);
+                return res.status(200).json(util.successTrue(result));
+            } else {
+                return res.sendStatus(204);
+            }
+        }
+    );
+});
+
 router.post("/", auth.authenticate(), (req, res, next) => {
     const { contentsNo } = req.body;
     //let q = "insert into star (starNo,userNo,contentsNo) values('0','" + userNo + "','" + contentsNo + "');";
@@ -158,12 +193,22 @@ router.get("/", auth.authenticate(), (req, res, next) => {
     );
 });
 
+router.options("/list/all", (req, res) => {
+    res.sendStatus(200);
+});
+
 router.options("/list", (req, res) => {
     res.sendStatus(200);
 });
 
 router.options("/", (req, res) => {
     res.sendStatus(200);
+});
+
+router.all("/list/all", (req, res, next) => {
+    return res
+        .status(405)
+        .json(util.successFalse(null, "요청 메서드를 확인하세요"));
 });
 
 router.all("/list", (req, res, next) => {
