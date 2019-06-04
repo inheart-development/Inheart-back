@@ -121,7 +121,7 @@ router.post(
     ]),
     (req, res, next) => {
         res.header("Access-Control-Allow-Headers", "multipart/form-data");
-        const {
+        var {
             categoryNo,
             contentsTitle,
             contentsExplain,
