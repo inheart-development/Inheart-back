@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const path = require("path");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
+const cors= require("cors");
 const nowTime = require("date-utils");
 const passport = require("passport");
 const flash = require("connect-flash");
@@ -35,6 +36,7 @@ passportAdminConfig();
 //passport 내부의 코드를 실행하기 위해
 app.set("port", process.env.PORT || 3000);
 
+app.use(cors()); //cors 요청 허용 + 배포 시에는 프론트 주소만 허용 되게끔 수정 필요!
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(
@@ -60,41 +62,7 @@ app.use(flash());
 app.use(passport.initialize()); //요청 객체에 passport설정을 심는다
 app.use(passport.session()); //express-session에서 생성하는 것이므로 express-session 뒤에 연결 해야 된다
 
-// app.all('/*', function (req, res, next) {
-//     res.header("Access-Control-Allow-Origin", "*");
-//     res.header("Access-Control-Allow-Headers", "Content-Type");
-// });
-
-//미들웨어 설정
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header(
-        "Access-Control-Allow-Methods",
-        "GET, POST, PATCH, PUT, DELETE, OPTIONS"
-    );
-    res.header(
-        "Access-Control-Allow-Headers",
-        "Origin, Content-Type, X-Auth-Token, Authorization"
-    );
-    //res.header("Access-Control-Allow-Headers", "content-type");
-    res.header("X-Content-Type-Options", "nosniff");
-    res.header("X-Frame-Options", "deny");
-    // res.header("Content-Security-Policy", "default-src 'none'");
-    res.removeHeader("x-Powered-By");
-    //res.header("Content-Type", "application/json; charset=utf-8");
-
-    next();
-});
-
 app.use(express.static(path.join(__dirname, "public/dist")));
-
-// app.use('/', function (req, res, next) {
-//     console.log(req.headers)
-//     var contype = req.headers['content-type'];
-//     if (!contype || contype.indexOf('application/json') !== 0)
-//         return res.status(406).json(util.successFalse(null, "content-type을 application/json으로 지정해주세요"));
-//     next();
-// });
 
 // app.use("/img", express.static("img"));
 app.use("/meditation", express.static(path.join(__dirname, "meditation")));
