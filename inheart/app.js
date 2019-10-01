@@ -1,11 +1,10 @@
-const createError = require("http-errors");
 const express = require("express");
 const morgan = require("morgan");
 const path = require("path");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const cors= require("cors");
-const nowTime = require("date-utils");
+// const nowTime = require("date-utils");
 const passport = require("passport");
 const flash = require("connect-flash");
 const util = require("./check/util");
@@ -84,7 +83,6 @@ app.use("/admin/faq", admin_faqRouter);
 app.use("/admin/survey", admin_serveyRouter);
 app.use("/admin/user", admin_userRouter);
 app.use("/admin", adminRouter);
-//app.use("/")
 //---------------------router------------------------
 
 app.use((req, res, next) => {

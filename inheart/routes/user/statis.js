@@ -1,6 +1,5 @@
-const express = require("express");
 const router = require("express").Router();
-const mysql = require("mysql");
+// const mysql = require("mysql");
 const con = require("../../db/db");
 const { isLoggedIn } = require("../../check/check");
 const util = require("../../check/util");
